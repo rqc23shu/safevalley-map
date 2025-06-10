@@ -1,0 +1,15 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Allow public read access to hazards collection
+    match /hazards/{hazardId} {
+      allow read: if true;  // Allow anyone to read hazards
+      allow write: if true; // Allow anyone to write hazards (for demo purposes)
+    }
+    
+    // Default deny all
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+} 

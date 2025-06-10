@@ -1,70 +1,135 @@
-# Getting Started with Create React App
+# SafeValley Map
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+> **SafeValley Map** is a web app for the EWB Digital Design Challenge, designed to help residents of Makers Valley, Johannesburg, report and visualize local safety hazards (crime, load shedding, potholes, illegal dumping) on a static map. The app supports hazard reporting, visualization, travel mode filters, and manual moderation via an admin panel.
 
-## Available Scripts
+---
 
-In the project directory, you can run:
+## Features
+- **Static Map Visualization:** Hazards are shown as color-coded markers and translucent circles on a custom map image.
+- **Hazard Reporting:** Residents can report hazards with type, description, radius, and duration.
+- **Travel Mode Filters:** Users can filter hazards by travel mode (walking, cycling, car, taxi).
+- **Admin Panel:** Password-protected interface for approving/rejecting reports.
+- **Auto-Expiry:** Hazards disappear after their set duration.
+- **Responsive UI:** Clean, modern, and mobile-friendly design using Tailwind CSS.
 
-### `npm start`
+## Tech Stack
+- **React** (frontend framework)
+- **Leaflet.js** (map rendering)
+- **Tailwind CSS** (styling)
+- **Firebase Firestore** (database)
+- **Jest** (basic testing)
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+## Getting Started
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+1. **Install dependencies:**
+   ```bash
+   npm install # Installs all required packages
+   ```
+2. **Run the app locally:**
+   ```bash
+   npm start # Starts the development server
+   ```
+3. **Build for production:**
+   ```bash
+   npm run build # Creates an optimized production build
+   ```
+4. **Run tests:**
+   ```bash
+   npm test # Runs Jest tests (Node 20.x recommended)
+   ```
 
-### `npm test`
+## Deployment
+- The app can be deployed to any static hosting (e.g., Vercel, Netlify, Firebase Hosting).
+- Ensure your `map.png` is in the `public/` directory.
+- Update Firebase config in `src/services/firebase.js` if needed.
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+## Marking Scheme Alignment
+- **Problem Identification:** Focused on real safety needs in Makers Valley.
+- **Design:** Modern, intuitive UI; clear navigation; responsive layout.
+- **Implementation:** Clean, well-commented code; modular React components; real-time Firestore integration.
+- **Sustainability:** Easy to maintain/extend; clear documentation; scalable structure.
+- **Testing:** Includes a basic Jest test for demonstration.
+- **Teamwork & Presentation:** Code and documentation are structured for clarity and demo-readiness.
 
-### `npm run build`
+---
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+For more details, see code comments in each file. For admin access, use the password set in `AdminPanel.js` (default: `admin123`).
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+## Setup Instructions
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+### 1. Prerequisites
+- Node.js and npm installed ([Download here](https://nodejs.org))
+- Firebase account ([Sign up here](https://firebase.google.com))
 
-### `npm run eject`
+### 2. Clone the Repository
+```
+git clone <your-repo-url>
+cd safevalley-map
+```
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+### 3. Install Dependencies
+```
+npm install
+```
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+### 4. Configure Tailwind CSS
+- Already set up in this project. If you need to re-init:
+```
+npx tailwindcss init -p
+```
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+### 5. Set Up Firebase
+- Go to the [Firebase Console](https://console.firebase.google.com/)
+- Create a new project
+- Enable Firestore Database
+- Register a web app and copy the config
+- Replace the config in `src/services/firebase.js`
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+### 6. Add Map Image
+- Place your static map image as `public/map.png`
 
-## Learn More
+### 7. Start the App
+```
+npm start
+```
+- Open [http://localhost:3000](http://localhost:3000)
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+### 8. Build and Deploy
+```
+npm run build
+firebase deploy
+```
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+## Usage
+- Click on the map to report a hazard
+- Fill in the form and submit
+- Admins can review and approve/reject reports in the admin panel
+- Approved hazards appear on the map for the specified duration
 
-### Code Splitting
+## Testing
+- Run unit tests:
+```
+npm test
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+## Project Structure
+```
+safevalley-map/
+├── public/
+│   ├── index.html
+│   ├── map.png
+├── src/
+│   ├── components/
+│   │   ├── Map/MapComponent.js
+│   │   ├── Forms/ReportForm.js
+│   │   ├── Forms/AdminPanel.js
+│   ├── services/firebase.js
+│   ├── App.js
+│   ├── index.js
+│   ├── index.css
+├── package.json
+```
 
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+## Credits
+- Built with React, Leaflet.js, Tailwind CSS, and Firebase
+- Inspired by StackOverflow and EWB Digital Design Challenge
