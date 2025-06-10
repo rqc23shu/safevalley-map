@@ -4,6 +4,7 @@
 import React, { useState } from 'react';
 import { collection, addDoc } from 'firebase/firestore';
 import { db } from '../../services/firebase';
+import { validateHazardReport, sanitizeInput } from '../../utils/validation';
 
 /**
  * ReportForm - Modal form for submitting a new hazard report
@@ -21,7 +22,9 @@ const ReportForm = ({ location, onClose }) => {
   });
   // State for submission status and errors
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [error, setError] = useState('');
+  const [errors, setErrors] = useState([]);
+  const [retryCount, setRetryCount] = useState(0);
+  const MAX_RETRIES = 3;
 
   // Handle input changes for all form fields
   const handleChange = (e) => {
@@ -30,33 +33,51 @@ const ReportForm = ({ location, onClose }) => {
       ...prev,
       [name]: value
     }));
+    // Clear errors when user makes changes
+    setErrors([]);
   };
 
   // Handle form submission: add report to Firestore
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
-    setError('');
+    setErrors([]);
 
-    // Validate radius
-    if (Number(formData.radius) > 500) {
-      setError('Radius too large. Please enter a value of 500 meters or less.');
+    // Validate form data
+    const validationErrors = validateHazardReport({ ...formData, location });
+    if (validationErrors.length > 0) {
+      setErrors(validationErrors);
       setIsSubmitting(false);
       return;
     }
 
+    // Sanitize input
+    const sanitizedData = {
+      ...formData,
+      description: sanitizeInput(formData.description),
+    };
+
     try {
       await addDoc(collection(db, 'hazards'), {
-        ...formData,
+        ...sanitizedData,
         location,
         isApproved: false,
         isRejected: false,
         createdAt: new Date(),
+        status: 'pending',
+        retryCount: 0
       });
       onClose();
     } catch (err) {
-      setError('Failed to submit report. Please try again.');
       console.error('Error submitting report:', err);
+      if (retryCount < MAX_RETRIES) {
+        setRetryCount(prev => prev + 1);
+        setErrors(['Failed to submit report. Retrying...']);
+        // Retry after a short delay
+        setTimeout(() => handleSubmit(e), 1000);
+      } else {
+        setErrors(['Failed to submit report after multiple attempts. Please try again later.']);
+      }
     } finally {
       setIsSubmitting(false);
     }
@@ -66,10 +87,14 @@ const ReportForm = ({ location, onClose }) => {
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4" style={{ zIndex: 9999 }}>
       <div className="bg-white rounded-lg p-6 max-w-md w-full">
         <h2 className="text-2xl font-bold mb-4">Report a Hazard</h2>
-        {/* Show error message if submission fails */}
-        {error && (
+        {/* Show error messages if any */}
+        {errors.length > 0 && (
           <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
-            {error}
+            <ul className="list-disc list-inside">
+              {errors.map((error, index) => (
+                <li key={index}>{error}</li>
+              ))}
+            </ul>
           </div>
         )}
         {/* Hazard report form */}
@@ -106,13 +131,18 @@ const ReportForm = ({ location, onClose }) => {
               className="input"
               rows="3"
               required
+              maxLength={500}
+              placeholder="Please provide a detailed description (10-500 characters)"
             />
+            <p className="text-sm text-gray-500 mt-1">
+              {formData.description.length}/500 characters
+            </p>
           </div>
 
           {/* Photo upload placeholder (disabled) */}
           <div className="mb-4">
             <label className="label" htmlFor="photo">
-              Photo (placeholder)
+              Photo (Coming Soon)
             </label>
             <input
               type="file"
@@ -122,6 +152,9 @@ const ReportForm = ({ location, onClose }) => {
               disabled
               placeholder="Photo upload coming soon"
             />
+            <p className="text-sm text-gray-500 mt-1">
+              Photo upload functionality will be available in a future update
+            </p>
           </div>
 
           <div className="mb-4">
@@ -163,6 +196,7 @@ const ReportForm = ({ location, onClose }) => {
               type="button"
               onClick={onClose}
               className="btn btn-secondary"
+              disabled={isSubmitting}
             >
               Cancel
             </button>
