@@ -27,6 +27,7 @@ const EditHazardModal = ({ hazard, onClose, onSave }) => {
     e.preventDefault();
     setIsSaving(true);
     setError('');
+    
 
     try {
       await onSave(formData);
