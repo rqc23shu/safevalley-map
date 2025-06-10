@@ -2,11 +2,11 @@
 // Admin interface for moderating hazard reports
 
 import React, { useState, useEffect } from 'react';
-import { collection, query, where, onSnapshot, doc, updateDoc, deleteDoc, orderBy, limit, startAfter } from 'firebase/firestore';
-import { signInWithEmailAndPassword, signOut } from 'firebase/auth';
-import { db, auth } from '../../services/firebase';
+import { collection, query, onSnapshot, doc, updateDoc, deleteDoc } from 'firebase/firestore';
+import { db } from '../../services/firebase';
 
-const ITEMS_PER_PAGE = 10;
+// Simple password for prototype demo
+const ADMIN_PASSWORD = 'admin123';
 
 const EditHazardModal = ({ hazard, onClose, onSave }) => {
   const [formData, setFormData] = useState({
@@ -139,121 +139,72 @@ const EditHazardModal = ({ hazard, onClose, onSave }) => {
   );
 };
 
-/**
- * AdminPanel - Admin interface for reviewing and moderating hazard reports
- * - Requires password authentication for access
- * - Fetches pending reports from Firestore (isApproved: false, isRejected: false)
- * - Allows admin to approve or reject reports
- * - Shows report details for moderation
- */
 const AdminPanel = () => {
   // State for all hazards
   const [hazards, setHazards] = useState([]);
-  const [lastVisible, setLastVisible] = useState(null);
-  const [hasMore, setHasMore] = useState(true);
   // State for loading and error handling
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   // State for authentication
-  const [email, setEmail] = useState('');
+  const [authenticated, setAuthenticated] = useState(false);
   const [password, setPassword] = useState('');
-  const [authError, setAuthError] = useState('');
   const [editHazard, setEditHazard] = useState(null);
-  const [saving, setSaving] = useState(false);
   const [activeTab, setActiveTab] = useState('pending');
 
-  // Effect: fetch hazards if authenticated
+  // Effect: fetch all hazards if authenticated
   useEffect(() => {
-    if (!auth.currentUser) return;
-
-    const fetchHazards = async () => {
-      try {
-        const q = query(
-          collection(db, 'hazards'),
-          orderBy('createdAt', 'desc'),
-          limit(ITEMS_PER_PAGE)
-        );
-
-        const unsubscribe = onSnapshot(q, (querySnapshot) => {
-          const allHazards = [];
-          querySnapshot.forEach((doc) => {
-            allHazards.push({ id: doc.id, ...doc.data() });
-          });
-          setHazards(allHazards);
-          setLastVisible(querySnapshot.docs[querySnapshot.docs.length - 1]);
-          setHasMore(querySnapshot.docs.length === ITEMS_PER_PAGE);
-          setLoading(false);
-        }, (err) => {
-          setError('Error loading hazards');
-          setLoading(false);
-        });
-
-        return () => unsubscribe();
-      } catch (err) {
-        setError('Error setting up hazards listener');
-        setLoading(false);
-      }
-    };
-
-    fetchHazards();
-  }, [auth.currentUser]);
+    if (!authenticated) return;
+    const q = query(collection(db, 'hazards'));
+    const unsubscribe = onSnapshot(q, (querySnapshot) => {
+      const allHazards = [];
+      querySnapshot.forEach((doc) => {
+        allHazards.push({ id: doc.id, ...doc.data() });
+      });
+      setHazards(allHazards);
+      setLoading(false);
+    }, (err) => {
+      setError('Error loading hazards');
+      setLoading(false);
+    });
+    return () => unsubscribe();
+  }, [authenticated]);
 
   // Handle admin login
-  const handleLogin = async (e) => {
-    e.preventDefault();
-    setAuthError('');
-    try {
-      await signInWithEmailAndPassword(auth, email, password);
-    } catch (err) {
-      setAuthError('Invalid email or password');
-      console.error('Login error:', err);
-    }
-  };
-
-  // Handle logout
-  const handleLogout = async () => {
-    try {
-      await signOut(auth);
-    } catch (err) {
-      setError('Error signing out');
-      console.error('Logout error:', err);
-    }
-  };
-
-  // Load more hazards
-  const loadMore = async () => {
-    if (!lastVisible || !hasMore) return;
-
-    try {
-      const q = query(
-        collection(db, 'hazards'),
-        orderBy('createdAt', 'desc'),
-        startAfter(lastVisible),
-        limit(ITEMS_PER_PAGE)
-      );
-
-      const snapshot = await getDocs(q);
-      const newHazards = [];
-      snapshot.forEach((doc) => {
-        newHazards.push({ id: doc.id, ...doc.data() });
-      });
-
-      setHazards(prev => [...prev, ...newHazards]);
-      setLastVisible(snapshot.docs[snapshot.docs.length - 1]);
-      setHasMore(snapshot.docs.length === ITEMS_PER_PAGE);
-    } catch (err) {
-      setError('Error loading more hazards');
-      console.error('Load more error:', err);
-    }
-  };
+  if (!authenticated) {
+    return (
+      <div className="flex flex-col items-center justify-center h-screen">
+        <div className="bg-white p-6 rounded shadow max-w-xs w-full">
+          <h2 className="text-xl font-bold mb-4">Admin Login</h2>
+          <p className="text-sm text-gray-500 mb-4">
+            For demo purposes, use password: {ADMIN_PASSWORD}
+          </p>
+          <input
+            type="password"
+            className="input mb-4"
+            placeholder="Enter admin password"
+            value={password}
+            onChange={e => setPassword(e.target.value)}
+          />
+          <button
+            className="btn btn-primary w-full"
+            onClick={() => {
+              if (password === ADMIN_PASSWORD) setAuthenticated(true);
+              else alert('Incorrect password');
+            }}
+          >
+            Login
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   // Handle report approval
   const handleApprove = async (reportId) => {
     try {
       await updateDoc(doc(db, 'hazards', reportId), {
         isApproved: true,
-        approvedAt: new Date(),
-        status: 'approved'
+        approvedAt: new Date()
       });
     } catch (err) {
       setError('Error approving report');
@@ -266,8 +217,7 @@ const AdminPanel = () => {
     try {
       await updateDoc(doc(db, 'hazards', reportId), {
         isRejected: true,
-        rejectedAt: new Date(),
-        status: 'rejected'
+        rejectedAt: new Date()
       });
     } catch (err) {
       setError('Error rejecting report');
@@ -277,18 +227,33 @@ const AdminPanel = () => {
 
   // Handle report deletion
   const handleDelete = async (reportId) => {
-    if (!window.confirm('Are you sure you want to delete this report? This action cannot be undone.')) return;
+    if (!window.confirm('Are you sure you want to delete this report? This action can be undone from the Deleted tab.')) return;
     try {
-      await deleteDoc(doc(db, 'hazards', reportId));
+      await updateDoc(doc(db, 'hazards', reportId), {
+        isDeleted: true,
+        deletedAt: new Date()
+      });
     } catch (err) {
       setError('Error deleting report');
       console.error('Delete error:', err);
     }
   };
 
+  // Handle report restoration
+  const handleRestore = async (reportId) => {
+    try {
+      await updateDoc(doc(db, 'hazards', reportId), {
+        isDeleted: false,
+        deletedAt: null
+      });
+    } catch (err) {
+      setError('Error restoring report');
+      console.error('Restore error:', err);
+    }
+  };
+
   // Handle hazard edit/save
   const handleEditSave = async (reportId, newData) => {
-    setSaving(true);
     try {
       await updateDoc(doc(db, 'hazards', reportId), {
         ...newData,
@@ -298,58 +263,14 @@ const AdminPanel = () => {
     } catch (err) {
       setError('Error saving changes');
       console.error('Edit save error:', err);
-    } finally {
-      setSaving(false);
     }
   };
 
   // Categorize hazards
-  const pendingReports = hazards.filter(h => !h.isApproved && !h.isRejected);
-  const approvedReports = hazards.filter(h => h.isApproved && !h.isRejected);
-  const rejectedReports = hazards.filter(h => h.isRejected);
-
-  // Show login form if not authenticated
-  if (!auth.currentUser) {
-    return (
-      <div className="flex flex-col items-center justify-center h-screen">
-        <div className="bg-white p-6 rounded shadow max-w-xs w-full">
-          <h2 className="text-xl font-bold mb-4">Admin Login</h2>
-          {authError && (
-            <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
-              {authError}
-            </div>
-          )}
-          <form onSubmit={handleLogin}>
-            <div className="mb-4">
-              <label className="label" htmlFor="email">Email</label>
-              <input
-                type="email"
-                id="email"
-                className="input"
-                value={email}
-                onChange={e => setEmail(e.target.value)}
-                required
-              />
-            </div>
-            <div className="mb-4">
-              <label className="label" htmlFor="password">Password</label>
-              <input
-                type="password"
-                id="password"
-                className="input"
-                value={password}
-                onChange={e => setPassword(e.target.value)}
-                required
-              />
-            </div>
-            <button type="submit" className="btn btn-primary w-full">
-              Login
-            </button>
-          </form>
-        </div>
-      </div>
-    );
-  }
+  const pendingReports = hazards.filter(h => !h.isApproved && !h.isRejected && !h.isDeleted);
+  const approvedReports = hazards.filter(h => h.isApproved && !h.isRejected && !h.isDeleted);
+  const rejectedReports = hazards.filter(h => h.isRejected && !h.isDeleted);
+  const deletedReports = hazards.filter(h => h.isDeleted);
 
   // Show loading spinner while fetching data
   if (loading) {
@@ -365,7 +286,7 @@ const AdminPanel = () => {
     <div className="container mx-auto px-4 py-8">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-3xl font-bold">Admin Panel</h1>
-        <button onClick={handleLogout} className="btn btn-secondary">
+        <button onClick={() => setAuthenticated(false)} className="btn btn-secondary">
           Logout
         </button>
       </div>
@@ -402,6 +323,14 @@ const AdminPanel = () => {
           onClick={() => setActiveTab('rejected')}
         >
           Rejected <span className="ml-2 px-2 py-1 bg-red-100 text-red-800 rounded text-xs">{rejectedReports.length}</span>
+        </button>
+        <button
+          className={`px-4 py-2 -mb-px font-semibold border-b-2 transition-colors duration-200 ${
+            activeTab === 'deleted' ? 'border-purple-500 text-purple-700' : 'border-transparent text-gray-500 hover:text-purple-700'
+          }`}
+          onClick={() => setActiveTab('deleted')}
+        >
+          Deleted <span className="ml-2 px-2 py-1 bg-purple-100 text-purple-800 rounded text-xs">{deletedReports.length}</span>
         </button>
       </div>
 
@@ -477,7 +406,7 @@ const AdminPanel = () => {
         {activeTab === 'approved' && (
           <section>
             {approvedReports.length === 0 ? (
-              <p className="text-gray-500">No existing pins</p>
+              <p className="text-gray-500">No approved reports</p>
             ) : (
               <div className="grid gap-6">
                 {approvedReports.map((report) => (
@@ -496,7 +425,7 @@ const AdminPanel = () => {
                         <button
                           onClick={() => setEditHazard(report)}
                           className="btn btn-secondary flex items-center gap-1"
-                          title="Edit pin"
+                          title="Edit report"
                         >
                           <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536M9 11l6 6M3 17v4h4l10.293-10.293a1 1 0 00-1.414-1.414L3 17z" />
@@ -506,7 +435,7 @@ const AdminPanel = () => {
                         <button
                           onClick={() => handleDelete(report.id)}
                           className="btn btn-danger flex items-center gap-1"
-                          title="Delete pin"
+                          title="Delete report"
                         >
                           <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -515,26 +444,13 @@ const AdminPanel = () => {
                         </button>
                       </div>
                     </div>
-                    <div className="space-y-4">
+                    <p className="text-gray-700 mb-4">{report.description}</p>
+                    <div className="grid grid-cols-2 gap-4 text-sm text-gray-500">
                       <div>
-                        <h4 className="font-medium">Description</h4>
-                        <p className="text-gray-600">{report.description}</p>
+                        <span className="font-semibold">Radius:</span> {report.radius}m
                       </div>
-                      <div className="grid grid-cols-2 gap-4">
-                        <div>
-                          <h4 className="font-medium">Location</h4>
-                          <p className="text-gray-600">
-                            Lat: {report.location.lat.toFixed(6)}<br />
-                            Lng: {report.location.lng.toFixed(6)}
-                          </p>
-                        </div>
-                        <div>
-                          <h4 className="font-medium">Details</h4>
-                          <p className="text-gray-600">
-                            Radius: {report.radius}m<br />
-                            Duration: {report.duration} days
-                          </p>
-                        </div>
+                      <div>
+                        <span className="font-semibold">Duration:</span> {report.duration} days
                       </div>
                     </div>
                   </div>
@@ -575,26 +491,13 @@ const AdminPanel = () => {
                         </button>
                       </div>
                     </div>
-                    <div className="space-y-4">
+                    <p className="text-gray-700 mb-4">{report.description}</p>
+                    <div className="grid grid-cols-2 gap-4 text-sm text-gray-500">
                       <div>
-                        <h4 className="font-medium">Description</h4>
-                        <p className="text-gray-600">{report.description}</p>
+                        <span className="font-semibold">Radius:</span> {report.radius}m
                       </div>
-                      <div className="grid grid-cols-2 gap-4">
-                        <div>
-                          <h4 className="font-medium">Location</h4>
-                          <p className="text-gray-600">
-                            Lat: {report.location.lat.toFixed(6)}<br />
-                            Lng: {report.location.lng.toFixed(6)}
-                          </p>
-                        </div>
-                        <div>
-                          <h4 className="font-medium">Details</h4>
-                          <p className="text-gray-600">
-                            Radius: {report.radius}m<br />
-                            Duration: {report.duration} days
-                          </p>
-                        </div>
+                      <div>
+                        <span className="font-semibold">Duration:</span> {report.duration} days
                       </div>
                     </div>
                   </div>
@@ -604,17 +507,51 @@ const AdminPanel = () => {
           </section>
         )}
 
-        {/* Load More Button */}
-        {hasMore && (
-          <div className="flex justify-center mt-8">
-            <button
-              onClick={loadMore}
-              className="btn btn-secondary"
-              disabled={loading}
-            >
-              {loading ? 'Loading...' : 'Load More'}
-            </button>
-          </div>
+        {activeTab === 'deleted' && (
+          <section>
+            {deletedReports.length === 0 ? (
+              <p className="text-gray-500">No deleted reports</p>
+            ) : (
+              <div className="grid gap-6">
+                {deletedReports.map((report) => (
+                  <div key={report.id} className="bg-white rounded-lg shadow-md p-6">
+                    <div className="flex justify-between items-start mb-4">
+                      <div>
+                        <h3 className="text-xl font-semibold capitalize flex items-center gap-2">
+                          {report.type.replace('_', ' ')}
+                          <span className="px-2 py-1 bg-purple-100 text-purple-800 rounded text-xs">Deleted</span>
+                        </h3>
+                        <p className="text-gray-500">
+                          Deleted {report.deletedAt && report.deletedAt.toDate ? new Date(report.deletedAt.toDate()).toLocaleString() : ''}
+                        </p>
+                      </div>
+                      <div className="flex gap-2">
+                        <button
+                          onClick={() => handleRestore(report.id)}
+                          className="btn btn-secondary flex items-center gap-1"
+                          title="Restore report"
+                        >
+                          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                          </svg>
+                          Restore
+                        </button>
+                      </div>
+                    </div>
+                    <p className="text-gray-700 mb-4">{report.description}</p>
+                    <div className="grid grid-cols-2 gap-4 text-sm text-gray-500">
+                      <div>
+                        <span className="font-semibold">Radius:</span> {report.radius}m
+                      </div>
+                      <div>
+                        <span className="font-semibold">Duration:</span> {report.duration} days
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </section>
         )}
       </div>
 

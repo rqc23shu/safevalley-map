@@ -1,15 +1,59 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    // Allow public read access to hazards collection
-    match /hazards/{hazardId} {
-      allow read: if true;  // Allow anyone to read hazards
-      allow write: if true; // Allow anyone to write hazards (for demo purposes)
+    // Helper functions
+    function isAuthenticated() {
+      return request.auth != null;
     }
     
-    // Default deny all
-    match /{document=**} {
-      allow read, write: if false;
+    function isAdmin() {
+      return isAuthenticated() && 
+        exists(/databases/$(database)/documents/admins/$(request.auth.uid));
+    }
+    
+    function isValidHazard() {
+      let data = request.resource.data;
+      return data.keys().hasAll(['type', 'description', 'radius', 'duration', 'location', 'isApproved', 'isRejected', 'createdAt']) &&
+        data.type in ['crime', 'load_shedding', 'pothole', 'dumping'] &&
+        data.description is string &&
+        data.description.size() >= 10 &&
+        data.description.size() <= 500 &&
+        data.radius is number &&
+        data.radius >= 10 &&
+        data.radius <= 500 &&
+        data.duration is number &&
+        data.duration >= 1 &&
+        data.duration <= 30 &&
+        data.location.lat is number &&
+        data.location.lng is number &&
+        data.isApproved is bool &&
+        data.isRejected is bool &&
+        data.createdAt is timestamp;
+    }
+
+    // Hazards collection rules
+    match /hazards/{hazardId} {
+      // Anyone can read approved hazards
+      allow read: if resource.data.isApproved == true && resource.data.isRejected == false;
+      
+      // Anyone can create a new hazard report
+      allow create: if isValidHazard() && 
+        request.resource.data.isApproved == false &&
+        request.resource.data.isRejected == false;
+      
+      // Only admins can update or delete hazards
+      allow update, delete: if isAdmin();
+    }
+
+    // Admins collection rules
+    match /admins/{userId} {
+      // Only admins can read the admin list
+      allow read: if isAdmin();
+      
+      // Only super admins can modify the admin list
+      allow write: if isAdmin() && 
+        exists(/databases/$(database)/documents/admins/$(request.auth.uid)/isSuperAdmin) &&
+        get(/databases/$(database)/documents/admins/$(request.auth.uid)).data.isSuperAdmin == true;
     }
   }
 } 
