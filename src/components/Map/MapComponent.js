@@ -1,7 +1,7 @@
 // MapComponent.js
 // Displays the static map, handles map clicks, and visualizes hazards as markers and translucent circles
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { MapContainer, ImageOverlay, Marker, Popup, useMapEvents } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
@@ -96,8 +96,88 @@ const getHazardIcon = (type) => {
   });
 };
 
+// Overlay component to block pointer events on the grey area
+function MapInteractionOverlay({ map, bounds }) {
+  const [overlayRects, setOverlayRects] = useState(null);
+  const containerRef = useRef();
+
+  useEffect(() => {
+    if (!map) return;
+    function updateOverlayRects() {
+      // Get pixel positions of the image overlay corners
+      const sw = map.latLngToContainerPoint(bounds[0]);
+      const ne = map.latLngToContainerPoint(bounds[1]);
+      // Calculate the rectangle for the image overlay
+      const left = Math.min(sw.x, ne.x);
+      const right = Math.max(sw.x, ne.x);
+      const top = Math.min(sw.y, ne.y);
+      const bottom = Math.max(sw.y, ne.y);
+      // Get map container size
+      const container = map.getContainer();
+      const width = container.offsetWidth;
+      const height = container.offsetHeight;
+      setOverlayRects({ left, right, top, bottom, width, height });
+    }
+    updateOverlayRects();
+    map.on('move zoom resize', updateOverlayRects);
+    return () => {
+      map.off('move zoom resize', updateOverlayRects);
+    };
+  }, [map, bounds]);
+
+  if (!overlayRects) return null;
+  const { left, right, top, bottom, width, height } = overlayRects;
+  // Render four overlay divs: top, left, right, bottom
+  return (
+    <>
+      {/* Top overlay */}
+      <div style={{
+        position: 'absolute',
+        left: 0,
+        top: 0,
+        width: '100%',
+        height: top,
+        pointerEvents: 'auto',
+        zIndex: 1000,
+      }} />
+      {/* Bottom overlay */}
+      <div style={{
+        position: 'absolute',
+        left: 0,
+        top: bottom,
+        width: '100%',
+        height: height - bottom,
+        pointerEvents: 'auto',
+        zIndex: 1000,
+      }} />
+      {/* Left overlay */}
+      <div style={{
+        position: 'absolute',
+        left: 0,
+        top: top,
+        width: left,
+        height: bottom - top,
+        pointerEvents: 'auto',
+        zIndex: 1000,
+      }} />
+      {/* Right overlay */}
+      <div style={{
+        position: 'absolute',
+        left: right,
+        top: top,
+        width: width - right,
+        height: bottom - top,
+        pointerEvents: 'auto',
+        zIndex: 1000,
+      }} />
+    </>
+  );
+}
+
 const MapComponent = ({ onMapClick, selectedTravelMode }) => {
   const [hazards, setHazards] = useState([]);
+  const [map, setMap] = useState(null);
+  const mapRef = useRef();
 
   useEffect(() => {
     const q = query(
@@ -160,6 +240,9 @@ const MapComponent = ({ onMapClick, selectedTravelMode }) => {
         style={{ height: '100%', width: '100%', zIndex: 1 }}
         crs={L.CRS.Simple}
         maxBounds={bounds}
+        maxBoundsViscosity={1}
+        whenCreated={setMap}
+        ref={mapRef}
       >
         {/* Static image overlay */}
         <ImageOverlay url={imageUrl} bounds={bounds} interactive={true} />
@@ -186,6 +269,8 @@ const MapComponent = ({ onMapClick, selectedTravelMode }) => {
             </Marker>
           </React.Fragment>
         ))}
+        {/* Overlay to block pointer events on the grey area */}
+        {map && <MapInteractionOverlay map={map} bounds={bounds} />}
       </MapContainer>
     </div>
   );
