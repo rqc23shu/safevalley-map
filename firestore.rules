@@ -13,14 +13,11 @@ service cloud.firestore {
     
     function isValidHazard() {
       let data = request.resource.data;
-      return data.keys().hasAll(['type', 'description', 'radius', 'duration', 'location', 'isApproved', 'isRejected', 'createdAt']) &&
-        data.type in ['crime', 'load_shedding', 'pothole', 'dumping'] &&
+      return data.keys().hasAll(['type', 'description', 'duration', 'location', 'isApproved', 'isRejected', 'createdAt']) &&
+        data.type in ['crime', 'load_shedding', 'pothole', 'dumping', 'water_leak', 'sewerage_leak', 'flooding'] &&
         data.description is string &&
         data.description.size() >= 10 &&
         data.description.size() <= 500 &&
-        data.radius is number &&
-        data.radius >= 10 &&
-        data.radius <= 500 &&
         data.duration is number &&
         data.duration >= 1 &&
         data.duration <= 30 &&

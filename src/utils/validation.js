@@ -22,12 +22,6 @@ export const validateHazardReport = (data) => {
     errors.push('Description must be less than 500 characters');
   }
 
-  // Radius validation
-  const radius = Number(data.radius);
-  if (isNaN(radius) || radius <= 0 || radius > 500) {
-    errors.push('Radius must be between 1 and 500 meters');
-  }
-
   // Duration validation
   const duration = Number(data.duration);
   if (isNaN(duration) || duration < 1 || duration > 30) {

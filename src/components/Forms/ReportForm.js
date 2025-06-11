@@ -17,7 +17,6 @@ const ReportForm = ({ location, onClose }) => {
   const [formData, setFormData] = useState({
     type: '',
     description: '',
-    radius: 100,
     duration: 1,
   });
   // State for submission status and errors
@@ -161,23 +160,6 @@ const ReportForm = ({ location, onClose }) => {
           </div>
 
           <div className="mb-4">
-            <label className="label" htmlFor="radius">
-              Radius (meters) <span className="text-xs text-gray-500">(max 500)</span>
-            </label>
-            <input
-              type="number"
-              id="radius"
-              name="radius"
-              value={formData.radius}
-              onChange={handleChange}
-              className="input"
-              min="10"
-              max="500"
-              required
-            />
-          </div>
-
-          <div className="mb-6">
             <label className="label" htmlFor="duration">
               Duration (days)
             </label>

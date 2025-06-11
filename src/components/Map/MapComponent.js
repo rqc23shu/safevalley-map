@@ -108,21 +108,11 @@ const MapComponent = ({ onMapClick, selectedTravelMode }) => {
       const hazardData = [];
       querySnapshot.forEach((doc) => {
         const data = doc.data();
-        console.log('Raw hazard data:', { 
-          id: doc.id, 
-          ...data,
-          isApproved: data.isApproved,
-          isRejected: data.isRejected,
-          isDeleted: data.isDeleted
-        });
-        
         // Only add hazards that are approved, not rejected, and not deleted
         if (data.isApproved === true && data.isRejected !== true && data.isDeleted !== true) {
           hazardData.push({ id: doc.id, ...data });
         }
       });
-      
-      console.log('Filtered hazards:', hazardData);
       setHazards(hazardData);
     }, (error) => {
       console.error('Firestore query error:', error);
@@ -147,42 +137,17 @@ const MapComponent = ({ onMapClick, selectedTravelMode }) => {
           return true;
       }
     })();
-    console.log('Hazard visibility check:', { 
-      hazardId: hazard.id,
-      type: hazard.type,
-      isVisible, 
-      selectedTravelMode 
-    });
     return isVisible;
   };
 
   // Filter out hazards whose duration has expired
   const now = new Date();
   const visibleHazards = hazards.filter(hazard => {
-    if (!hazard.createdAt || !hazard.duration) {
-      console.log('Hazard missing date info:', hazard);
-      return true;
-    }
+    if (!hazard.createdAt || !hazard.duration) return true;
     const created = hazard.createdAt.seconds ? new Date(hazard.createdAt.seconds * 1000) : new Date(hazard.createdAt);
     const expires = new Date(created.getTime() + hazard.duration * 24 * 60 * 60 * 1000);
-    const isNotExpired = now < expires; // Changed logic to show only non-expired hazards
-    console.log('Hazard expiration check:', { 
-      hazardId: hazard.id,
-      created: created.toISOString(),
-      expires: expires.toISOString(),
-      now: now.toISOString(),
-      isNotExpired 
-    });
-    return isNotExpired;
+    return now < expires;
   });
-
-  console.log('Final visible hazards:', visibleHazards.map(h => ({ 
-    id: h.id, 
-    type: h.type,
-    isApproved: h.isApproved,
-    isRejected: h.isRejected,
-    isDeleted: h.isDeleted
-  })));
 
   return (
     <div className="w-full h-[70vh] relative" style={{ backgroundColor: 'transparent' }}>
