@@ -302,6 +302,7 @@ const MapComponent = ({ onMapClick, selectedTravelMode }) => {
           maxBounds={L.latLngBounds(bounds).pad(0.1)}
           maxBoundsViscosity={1.0}
           ref={mapRef}
+          attributionControl={false}
         >
           {/* Static image overlay with enhanced styling */}
           <ImageOverlay 
