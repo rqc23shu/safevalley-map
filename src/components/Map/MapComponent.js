@@ -2,7 +2,7 @@
 // Displays the static map, handles map clicks, and visualizes hazards as markers and translucent circles
 
 import React, { useEffect, useState, useRef } from 'react';
-import { MapContainer, ImageOverlay, Marker, Popup, useMapEvents, Circle } from 'react-leaflet';
+import { MapContainer, ImageOverlay, Marker, Popup, useMapEvents } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { collection, query, where, onSnapshot } from 'firebase/firestore';
@@ -181,11 +181,6 @@ const MapComponent = ({ onMapClick, selectedTravelMode }) => {
   const [isLoading, setIsLoading] = useState(true);
   const mapRef = useRef();
 
-  // Debug: log isLoading state
-  console.log('isLoading:', isLoading);
-
-  // Remove the direct setIsLoading(false) from the component body
-  // Instead, set isLoading to false on mount
   React.useEffect(() => {
     setIsLoading(false);
   }, []);
@@ -253,22 +248,6 @@ const MapComponent = ({ onMapClick, selectedTravelMode }) => {
     });
   };
 
-  // Enhanced circle creation with animations
-  const createCircle = (hazard) => {
-    return L.circle([hazard.location.lat, hazard.location.lng], {
-      radius: 50,
-      color: getHazardColor(hazard.type),
-      fillColor: getHazardColor(hazard.type),
-      fillOpacity: 0.5,
-      className: 'hazard-circle',
-      interactive: true,
-      bubblingMouseEvents: false
-    });
-  };
-
-  // Add log before rendering MapContainer
-  console.log('Rendering MapContainer');
-
   return (
     <div className="w-full h-[70vh] relative" style={{ backgroundColor: 'transparent' }}>
       {/* Loading overlay */}
@@ -299,7 +278,6 @@ const MapComponent = ({ onMapClick, selectedTravelMode }) => {
           maxBoundsViscosity={1}
           whenCreated={(mapInstance) => {
             setMap(mapInstance);
-            console.log('Map created, loading set to false');
           }}
           ref={mapRef}
         >
@@ -359,7 +337,7 @@ const MapComponent = ({ onMapClick, selectedTravelMode }) => {
             </button>
           </div>
 
-          {/* Render hazard markers and circles */}
+          {/* Render hazard markers */}
           {visibleHazards.filter(filterHazardsByTravelMode).map((hazard) => (
             <React.Fragment key={hazard.id}>
               <Marker
@@ -385,16 +363,6 @@ const MapComponent = ({ onMapClick, selectedTravelMode }) => {
                   </div>
                 </Popup>
               </Marker>
-              <Circle
-                center={[hazard.location.lat, hazard.location.lng]}
-                radius={50}
-                pathOptions={{
-                  color: getHazardColor(hazard.type),
-                  fillColor: getHazardColor(hazard.type),
-                  fillOpacity: 0.5,
-                  className: 'hazard-circle'
-                }}
-              />
             </React.Fragment>
           ))}
         </MapContainer>

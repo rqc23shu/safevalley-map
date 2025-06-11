@@ -22,7 +22,6 @@ const EditHazardModal = ({ hazard, onClose, onSave }) => {
   const [formData, setFormData] = useState({
     type: hazard.type || '',
     description: hazard.description || '',
-    radius: hazard.radius || 100,
     duration: hazard.duration || 1,
   });
   const [error, setError] = useState('');
@@ -121,29 +120,6 @@ const EditHazardModal = ({ hazard, onClose, onSave }) => {
               />
               <div className="absolute bottom-2 right-2 text-xs text-gray-500">
                 {formData.description.length}/500
-              </div>
-            </div>
-          </div>
-
-          <div>
-            <label htmlFor="radius" className="block text-sm font-medium text-gray-700 mb-2">
-              Radius (meters)
-              <span className="text-xs text-gray-500 ml-1">(max 500)</span>
-            </label>
-            <div className="relative">
-              <input
-                type="number"
-                id="radius"
-                name="radius"
-                value={formData.radius}
-                onChange={handleChange}
-                min="10"
-                max="500"
-                required
-                className="block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 transition-colors duration-200"
-              />
-              <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-                <span className="text-gray-500 text-sm">m</span>
               </div>
             </div>
           </div>
@@ -560,7 +536,6 @@ const AdminPanel = () => {
                       <p className="text-gray-700">{hazard.description}</p>
                     </div>
                     <div className="mt-4 flex items-center space-x-4 text-sm text-gray-500">
-                      <span>Radius: {hazard.radius}m</span>
                       <span>Duration: {hazard.duration} days</span>
                     </div>
                   </div>

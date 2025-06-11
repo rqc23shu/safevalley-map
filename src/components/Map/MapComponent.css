@@ -52,12 +52,4 @@
   transition: opacity 0.3s ease-in-out;
 }
 
-/* Hazard circle animations */
-.hazard-circle {
-  transition: all 0.3s ease-in-out;
-}
-
-.hazard-circle:hover {
-  opacity: 0.8;
-  transform: scale(1.05);
-} 
+/* Removed .hazard-circle styles */ 
