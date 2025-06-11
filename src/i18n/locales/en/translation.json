@@ -1,0 +1,20 @@
+{
+  "common": {
+    "welcome": "Welcome to SafeValley Map",
+    "search": "Search",
+    "submit": "Submit",
+    "cancel": "Cancel"
+  },
+  "navigation": {
+    "home": "Home",
+    "about": "About",
+    "contact": "Contact"
+  },
+  "map": {
+    "title": "SafeValley Map",
+    "description": "Explore safe areas in your community",
+    "legend": "Map Legend",
+    "safe": "Safe Area",
+    "unsafe": "Unsafe Area"
+  }
+} 

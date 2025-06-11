@@ -1,0 +1,20 @@
+{
+  "common": {
+    "welcome": "Wamkelekile ku-SafeValley Map",
+    "search": "Khangela",
+    "submit": "Ngenisa",
+    "cancel": "Rhoxisa"
+  },
+  "navigation": {
+    "home": "Ekhaya",
+    "about": "Malunga Nathi",
+    "contact": "Qhagamshelana"
+  },
+  "map": {
+    "title": "I-SafeValley Map",
+    "description": "Hlola iindawo ezikhuselekileyo kwilali yakho",
+    "legend": "I-Legend Yemephu",
+    "safe": "Indawo Ekhuselekileyo",
+    "unsafe": "Indawo Engakhuselekanga"
+  }
+} 

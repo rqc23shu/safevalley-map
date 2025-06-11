@@ -1,0 +1,20 @@
+{
+  "common": {
+    "welcome": "Wamukelekile ku-SafeValley Map",
+    "search": "Sesha",
+    "submit": "Hambisa",
+    "cancel": "Khansela"
+  },
+  "navigation": {
+    "home": "Ekhaya",
+    "about": "Mayelana Nathi",
+    "contact": "Xhumana"
+  },
+  "map": {
+    "title": "I-SafeValley Map",
+    "description": "Hlola izindawo ezivikelekile emphakathini wakho",
+    "legend": "I-Legend Yemephu",
+    "safe": "Indawo Evikelekile",
+    "unsafe": "Indawo Engavikelekile"
+  }
+} 

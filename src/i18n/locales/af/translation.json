@@ -1,0 +1,20 @@
+{
+  "common": {
+    "welcome": "Welkom by SafeValley Kaart",
+    "search": "Soek",
+    "submit": "Dien in",
+    "cancel": "Kanselleer"
+  },
+  "navigation": {
+    "home": "Tuis",
+    "about": "Oor Ons",
+    "contact": "Kontak"
+  },
+  "map": {
+    "title": "SafeValley Kaart",
+    "description": "Verken veilige gebiede in jou gemeenskap",
+    "legend": "Kaart Legende",
+    "safe": "Veilige Gebied",
+    "unsafe": "Onveilige Gebied"
+  }
+} 
