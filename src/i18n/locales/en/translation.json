@@ -89,6 +89,7 @@
     "cancel": "Cancel",
     "submit": "Submit Report",
     "errorSubmit": "Failed to submit report. Retrying...",
-    "errorSubmitFinal": "Failed to submit report after multiple attempts. Please try again later."
+    "errorSubmitFinal": "Failed to submit report after multiple attempts. Please try again later.",
+    "minCharsHelper": "Minimum 5 characters required in the description."
   }
 } 

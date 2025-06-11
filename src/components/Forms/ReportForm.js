@@ -54,6 +54,13 @@ const ReportForm = ({ location, onClose }) => {
     setIsSubmitting(true);
     setErrors([]);
 
+    // Minimum character validation
+    if (formData.description.trim().length < 5) {
+      setErrors([t('report.minCharsHelper')]);
+      setIsSubmitting(false);
+      return;
+    }
+
     // Validate form data
     const validationErrors = validateHazardReport({ ...formData, location });
     if (validationErrors.length > 0) {
@@ -177,6 +184,7 @@ const ReportForm = ({ location, onClose }) => {
               {formData.description.length}/500
             </div>
           </div>
+          <div className="text-xs text-gray-500 mt-1">{t('report.minCharsHelper')}</div>
         </div>
 
         <div>

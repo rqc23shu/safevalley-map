@@ -89,6 +89,7 @@
     "cancel": "Kanselleer",
     "submit": "Dien Verslag In",
     "errorSubmit": "Kon nie verslag indien nie. Probeer weer...",
-    "errorSubmitFinal": "Kon nie verslag indien na verskeie pogings nie. Probeer later weer."
+    "errorSubmitFinal": "Kon nie verslag indien na verskeie pogings nie. Probeer later weer.",
+    "minCharsHelper": "Minimum van 5 karakters word in die beskrywing vereis."
   }
 } 

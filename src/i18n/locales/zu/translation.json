@@ -89,6 +89,7 @@
     "cancel": "Khansela",
     "submit": "Thumela Umbiko",
     "errorSubmit": "Kwehlulekile ukuthumela umbiko. Kuyazanywa futhi...",
-    "errorSubmitFinal": "Kwehlulekile ukuthumela umbiko ngemva kwemizamo eminingana. Sicela uzame futhi kamuva."
+    "errorSubmitFinal": "Kwehlulekile ukuthumela umbiko ngemva kwemizamo eminingana. Sicela uzame futhi kamuva.",
+    "minCharsHelper": "Okungenani izimpawu ezi-5 ziyadingeka encazelweni."
   }
 } 

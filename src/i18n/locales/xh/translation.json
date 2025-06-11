@@ -89,6 +89,7 @@
     "cancel": "Rhoxisa",
     "submit": "Ngenisa Ingxelo",
     "errorSubmit": "Ayiphumelelanga ukungenisa ingxelo. Kuyazanywa kwakhona...",
-    "errorSubmitFinal": "Ayiphumelelanga ukungenisa ingxelo emva kwemizamo emininzi. Nceda uzame kwakhona kamva."
+    "errorSubmitFinal": "Ayiphumelelanga ukungenisa ingxelo emva kwemizamo emininzi. Nceda uzame kwakhona kamva.",
+    "minCharsHelper": "Ubuncinane beempawu ezi-5 ziyafuneka kwinkcazo."
   }
 } 
