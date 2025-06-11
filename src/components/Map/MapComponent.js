@@ -2,7 +2,7 @@
 // Displays the static map, handles map clicks, and visualizes hazards as markers and translucent circles
 
 import React, { useEffect, useState } from 'react';
-import { MapContainer, ImageOverlay, Marker, Popup, useMapEvents, Circle } from 'react-leaflet';
+import { MapContainer, ImageOverlay, Marker, Popup, useMapEvents } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { collection, query, where, onSnapshot } from 'firebase/firestore';
@@ -153,16 +153,6 @@ const MapComponent = ({ onMapClick, selectedTravelMode }) => {
         {/* Render hazard markers and circles */}
         {visibleHazards.filter(filterHazardsByTravelMode).map((hazard) => (
           <React.Fragment key={hazard.id}>
-            {/* <Circle
-              center={[hazard.location.lat, hazard.location.lng]}
-              radius={Math.min(Number(hazard.radius) || 100, 500)}
-              pathOptions={{
-                color: getHazardColor(hazard.type),
-                fillColor: getHazardColor(hazard.type),
-                fillOpacity: 0.5,
-                weight: 2,
-              }}
-            /> */}
             <Marker position={[hazard.location.lat, hazard.location.lng]} icon={getHazardIcon(hazard.type)}>
               <Popup>
                 <div className="p-2">
