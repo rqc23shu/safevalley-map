@@ -6,17 +6,8 @@ import { collection, addDoc } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { db, storage } from '../../services/firebase';
 import { validateHazardReport, sanitizeInput } from '../../utils/validation';
+import { hazardTypes } from '../../utils/constants';
 import { useTranslation } from 'react-i18next';
-
-const hazardTypes = [
-  { value: 'crime', icon: '🚨' },
-  { value: 'load_shedding', icon: '⚡' },
-  { value: 'pothole', icon: '🕳️' },
-  { value: 'dumping', icon: '🗑️' },
-  { value: 'water_leak', icon: '💧' },
-  { value: 'sewerage_leak', icon: '🚰' },
-  { value: 'flooding', icon: '🌊' },
-];
 
 /**
  * ReportForm - Modal form for submitting a new hazard report

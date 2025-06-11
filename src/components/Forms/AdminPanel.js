@@ -5,19 +5,10 @@ import React, { useState, useEffect } from 'react';
 import { collection, query, onSnapshot, doc, updateDoc, deleteDoc } from 'firebase/firestore';
 import { useTranslation } from 'react-i18next';
 import { db } from '../../services/firebase';
+import { hazardTypes } from '../../utils/constants';
 
 // Simple password for prototype demo
 const ADMIN_PASSWORD = 'admin123';
-
-const hazardTypes = [
-  { value: 'crime', icon: '🚨' },
-  { value: 'load_shedding', icon: '⚡' },
-  { value: 'pothole', icon: '🕳️' },
-  { value: 'dumping', icon: '🗑️' },
-  { value: 'water_leak', icon: '💧' },
-  { value: 'sewerage_leak', icon: '🚰' },
-  { value: 'flooding', icon: '🌊' },
-];
 
 // Photo Viewer Modal Component
 const PhotoViewerModal = ({ photoUrl, onClose }) => {

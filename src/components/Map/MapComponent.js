@@ -7,6 +7,8 @@ import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { collection, query, where, onSnapshot } from 'firebase/firestore';
 import { db } from '../../services/firebase';
+import { hazardTypes } from '../../utils/constants';
+import { useTranslation } from 'react-i18next';
 import './MapComponent.css';
 
 // Map bounds for the Makers Valley static map image (real-world coordinates)
@@ -216,6 +218,7 @@ const MapComponent = ({ onMapClick, selectedTravelMode }) => {
   const [map, setMap] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const mapRef = useRef();
+  const { t } = useTranslation();
 
   React.useEffect(() => {
     setIsLoading(false);
@@ -329,6 +332,22 @@ const MapComponent = ({ onMapClick, selectedTravelMode }) => {
               zIndex: 2
             }}
           />
+
+          {/* Map Legend */}
+          <div className="absolute bottom-4 left-4 bg-white bg-opacity-90 p-4 rounded-lg shadow-lg z-40">
+            <h4 className="font-bold text-gray-800 mb-2">{t('map.legend')}</h4>
+            <div className="space-y-1">
+              {hazardTypes.map((hazard) => (
+                <div key={hazard.value} className="flex items-center space-x-2">
+                  <span 
+                    className="w-4 h-4 rounded-full"
+                    style={{ backgroundColor: getHazardColor(hazard.value) }}
+                  ></span>
+                  <span className="text-sm text-gray-700">{t(`admin.hazardTypes.${hazard.value}`)}</span>
+                </div>
+              ))}
+            </div>
+          </div>
 
           {/* Render hazard markers */}
           {visibleHazards.filter(filterHazardsByTravelMode).map((hazard) => (
