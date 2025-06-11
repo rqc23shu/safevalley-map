@@ -9,7 +9,12 @@
     "cycling": "Cycling",
     "car": "Car",
     "taxi": "Taxi",
-    "footer": "SafeValley Map - Making Makers Valley Safer"
+    "footer": "SafeValley Map - Making Makers Valley Safer",
+    "submitting": "Submitting...",
+    "viewPhoto": "View Photo",
+    "noPhotoAvailable": "No Photo Available",
+    "close": "Close",
+    "days": "days"
   },
   "navigation": {
     "home": "Home",
@@ -90,6 +95,12 @@
     "submit": "Submit Report",
     "errorSubmit": "Failed to submit report. Retrying...",
     "errorSubmitFinal": "Failed to submit report after multiple attempts. Please try again later.",
-    "minCharsHelper": "Minimum 5 characters required in the description."
+    "minCharsHelper": "Minimum 5 characters required in the description.",
+    "photoUpload": "Photo",
+    "photoUploadOptional": "(optional)",
+    "choosePhoto": "Choose a photo...",
+    "noPhotoUploaded": "No photo uploaded.",
+    "invalidFileType": "Only image files (JPG, PNG, GIF) are allowed.",
+    "fileTooLarge": "File is too large. Maximum size is 5MB."
   }
 } 

@@ -9,7 +9,12 @@
     "cycling": "Fietsry",
     "car": "Motor",
     "taxi": "Taxi",
-    "footer": "SafeValley Map - Maak Makers Valley Veiliger"
+    "footer": "SafeValley Map - Maak Makers Valley Veiliger",
+    "submitting": "Besig om in te dien...",
+    "viewPhoto": "Bekyk Foto",
+    "noPhotoAvailable": "Geen Foto Beskikbaar Nie",
+    "close": "Sluit",
+    "days": "dae"
   },
   "navigation": {
     "home": "Tuis",
@@ -90,6 +95,12 @@
     "submit": "Dien Verslag In",
     "errorSubmit": "Kon nie verslag indien nie. Probeer weer...",
     "errorSubmitFinal": "Kon nie verslag indien na verskeie pogings nie. Probeer later weer.",
-    "minCharsHelper": "Minimum van 5 karakters word in die beskrywing vereis."
+    "minCharsHelper": "Minimum van 5 karakters word in die beskrywing vereis.",
+    "photoUpload": "Foto",
+    "photoUploadOptional": "(opsioneel)",
+    "choosePhoto": "Kies 'n foto...",
+    "noPhotoUploaded": "Geen foto opgelaai nie.",
+    "invalidFileType": "Slegs beeldlêers (JPG, PNG, GIF) word toegelaat.",
+    "fileTooLarge": "Lêer is te groot. Maksimum grootte is 5MB."
   }
 } 

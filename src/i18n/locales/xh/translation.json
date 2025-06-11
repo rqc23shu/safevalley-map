@@ -9,7 +9,12 @@
     "cycling": "Ukukhwela Ibhayisikile",
     "car": "Imoto",
     "taxi": "Itekisi",
-    "footer": "SafeValley Map - Ukwenza i-Makers Valley Ikhuselekile"
+    "footer": "SafeValley Map - Ukwenza i-Makers Valley Ikhuselekile",
+    "submitting": "Iyangenisa...",
+    "viewPhoto": "Jonga Ifoto",
+    "noPhotoAvailable": "Ayikho Ifoto Efumanekayo",
+    "close": "Vala",
+    "days": "iintsuku"
   },
   "navigation": {
     "home": "Ekhaya",
@@ -90,6 +95,12 @@
     "submit": "Ngenisa Ingxelo",
     "errorSubmit": "Ayiphumelelanga ukungenisa ingxelo. Kuyazanywa kwakhona...",
     "errorSubmitFinal": "Ayiphumelelanga ukungenisa ingxelo emva kwemizamo emininzi. Nceda uzame kwakhona kamva.",
-    "minCharsHelper": "Ubuncinane beempawu ezi-5 ziyafuneka kwinkcazo."
+    "minCharsHelper": "Ubuncinane beempawu ezi-5 ziyafuneka kwinkcazo.",
+    "photoUpload": "Ifoto",
+    "photoUploadOptional": "(ukhetho)",
+    "choosePhoto": "Khetha ifoto...",
+    "noPhotoUploaded": "Ayikho ifoto elayishiweyo.",
+    "invalidFileType": "Kuvumelekile kuphela iifayile zemifanekiso (JPG, PNG, GIF).",
+    "fileTooLarge": "Ifayile inkulu kakhulu. Ubukhulu obuphezulu yi-5MB."
   }
 } 
