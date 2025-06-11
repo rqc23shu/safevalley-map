@@ -30,7 +30,14 @@ L.Icon.Default.mergeOptions({
 function MapClickHandler({ onMapClick }) {
   useMapEvents({
     click: (e) => {
-      if (onMapClick) onMapClick(e);
+      // Check if click is within bounds
+      const { lat, lng } = e.latlng;
+      if (
+        lat >= bounds[0][0] && lat <= bounds[1][0] &&
+        lng >= bounds[0][1] && lng <= bounds[1][1]
+      ) {
+        if (onMapClick) onMapClick(e);
+      }
     },
   });
   return null;
@@ -93,46 +100,89 @@ const MapComponent = ({ onMapClick, selectedTravelMode }) => {
   const [hazards, setHazards] = useState([]);
 
   useEffect(() => {
-    // Listen for approved, not rejected hazards
     const q = query(
-      collection(db, 'hazards'),
-      where('isApproved', '==', true),
-      where('isRejected', '==', false)
+      collection(db, 'hazards')
     );
+    
     const unsubscribe = onSnapshot(q, (querySnapshot) => {
       const hazardData = [];
       querySnapshot.forEach((doc) => {
-        hazardData.push({ id: doc.id, ...doc.data() });
+        const data = doc.data();
+        console.log('Raw hazard data:', { 
+          id: doc.id, 
+          ...data,
+          isApproved: data.isApproved,
+          isRejected: data.isRejected,
+          isDeleted: data.isDeleted
+        });
+        
+        // Only add hazards that are approved, not rejected, and not deleted
+        if (data.isApproved === true && data.isRejected !== true && data.isDeleted !== true) {
+          hazardData.push({ id: doc.id, ...data });
+        }
       });
+      
+      console.log('Filtered hazards:', hazardData);
       setHazards(hazardData);
+    }, (error) => {
+      console.error('Firestore query error:', error);
     });
+
     return () => unsubscribe();
   }, []);
 
   // Filter hazards by selected travel mode
   const filterHazardsByTravelMode = (hazard) => {
-    switch (selectedTravelMode) {
-      case 'walking':
-        return ['crime', 'load_shedding', 'pothole', 'dumping'].includes(hazard.type);
-      case 'cycling':
-        return ['pothole', 'dumping', 'crime', 'load_shedding'].includes(hazard.type);
-      case 'car':
-        return ['dumping', 'load_shedding', 'crime'].includes(hazard.type);
-      case 'taxi':
-        return ['crime', 'load_shedding'].includes(hazard.type);
-      default:
-        return true;
-    }
+    const isVisible = (() => {
+      switch (selectedTravelMode) {
+        case 'walking':
+          return ['crime', 'load_shedding', 'pothole', 'dumping'].includes(hazard.type);
+        case 'cycling':
+          return ['pothole', 'dumping', 'crime', 'load_shedding'].includes(hazard.type);
+        case 'car':
+          return ['dumping', 'load_shedding', 'crime'].includes(hazard.type);
+        case 'taxi':
+          return ['crime', 'load_shedding'].includes(hazard.type);
+        default:
+          return true;
+      }
+    })();
+    console.log('Hazard visibility check:', { 
+      hazardId: hazard.id,
+      type: hazard.type,
+      isVisible, 
+      selectedTravelMode 
+    });
+    return isVisible;
   };
 
   // Filter out hazards whose duration has expired
   const now = new Date();
   const visibleHazards = hazards.filter(hazard => {
-    if (!hazard.createdAt || !hazard.duration) return true;
+    if (!hazard.createdAt || !hazard.duration) {
+      console.log('Hazard missing date info:', hazard);
+      return true;
+    }
     const created = hazard.createdAt.seconds ? new Date(hazard.createdAt.seconds * 1000) : new Date(hazard.createdAt);
     const expires = new Date(created.getTime() + hazard.duration * 24 * 60 * 60 * 1000);
-    return expires > now;
+    const isNotExpired = now < expires; // Changed logic to show only non-expired hazards
+    console.log('Hazard expiration check:', { 
+      hazardId: hazard.id,
+      created: created.toISOString(),
+      expires: expires.toISOString(),
+      now: now.toISOString(),
+      isNotExpired 
+    });
+    return isNotExpired;
   });
+
+  console.log('Final visible hazards:', visibleHazards.map(h => ({ 
+    id: h.id, 
+    type: h.type,
+    isApproved: h.isApproved,
+    isRejected: h.isRejected,
+    isDeleted: h.isDeleted
+  })));
 
   return (
     <div className="w-full h-[70vh] relative" style={{ backgroundColor: 'transparent' }}>
