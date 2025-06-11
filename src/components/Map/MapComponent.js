@@ -2,11 +2,12 @@
 // Displays the static map, handles map clicks, and visualizes hazards as markers and translucent circles
 
 import React, { useEffect, useState, useRef } from 'react';
-import { MapContainer, ImageOverlay, Marker, Popup, useMapEvents } from 'react-leaflet';
+import { MapContainer, ImageOverlay, Marker, Popup, useMapEvents, Circle } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { collection, query, where, onSnapshot } from 'firebase/firestore';
 import { db } from '../../services/firebase';
+import './MapComponent.css';
 
 // Map bounds for the Makers Valley static map image (real-world coordinates)
 const bounds = [
@@ -177,7 +178,17 @@ function MapInteractionOverlay({ map, bounds }) {
 const MapComponent = ({ onMapClick, selectedTravelMode }) => {
   const [hazards, setHazards] = useState([]);
   const [map, setMap] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
   const mapRef = useRef();
+
+  // Debug: log isLoading state
+  console.log('isLoading:', isLoading);
+
+  // Remove the direct setIsLoading(false) from the component body
+  // Instead, set isLoading to false on mount
+  React.useEffect(() => {
+    setIsLoading(false);
+  }, []);
 
   useEffect(() => {
     const q = query(
@@ -229,56 +240,165 @@ const MapComponent = ({ onMapClick, selectedTravelMode }) => {
     return now < expires;
   });
 
+  // Enhanced marker creation with animations
+  const createMarker = (hazard) => {
+    const icon = getHazardIcon(hazard.type);
+    return new L.Marker([hazard.location.lat, hazard.location.lng], {
+      icon,
+      className: 'marker-icon',
+      riseOnHover: true,
+      autoPan: true,
+      autoPanSpeed: 10,
+      autoPanPadding: [50, 50]
+    });
+  };
+
+  // Enhanced circle creation with animations
+  const createCircle = (hazard) => {
+    return L.circle([hazard.location.lat, hazard.location.lng], {
+      radius: 50,
+      color: getHazardColor(hazard.type),
+      fillColor: getHazardColor(hazard.type),
+      fillOpacity: 0.5,
+      className: 'hazard-circle',
+      interactive: true,
+      bubblingMouseEvents: false
+    });
+  };
+
+  // Add log before rendering MapContainer
+  console.log('Rendering MapContainer');
+
   return (
     <div className="w-full h-[70vh] relative" style={{ backgroundColor: 'transparent' }}>
-      <MapContainer
-        center={[-26.189, 28.075]}
-        zoom={14}
-        minZoom={14}
-        maxZoom={18}
-        scrollWheelZoom={true}
-        zoomSnap={0.05}
-        zoomDelta={0.05}
-        zoomAnimation={true}
-        zoomAnimationThreshold={4}
-        easeLinearity={0.35}
-        wheelDebounceTime={40}
-        wheelPxPerZoomLevel={60}
-        style={{ height: '100%', width: '100%', zIndex: 1 }}
-        crs={L.CRS.Simple}
-        maxBounds={bounds}
-        maxBoundsViscosity={1}
-        whenCreated={setMap}
-        ref={mapRef}
-      >
-        {/* Static image overlay */}
-        <ImageOverlay url={imageUrl} bounds={bounds} interactive={true} />
-        {/* Handle map clicks */}
-        <MapClickHandler onMapClick={onMapClick} />
-        {/* Render hazard markers and circles */}
-        {visibleHazards.filter(filterHazardsByTravelMode).map((hazard) => (
-          <React.Fragment key={hazard.id}>
-            <Marker position={[hazard.location.lat, hazard.location.lng]} icon={getHazardIcon(hazard.type)}>
-              <Popup>
-                <div className="p-2">
-                  <h3 className="font-bold capitalize">{hazard.type.replace('_', ' ')}</h3>
-                  <p className="mt-1">{hazard.description}</p>
-                  <p className="text-sm text-gray-500 mt-1">
-                    Duration: {hazard.duration} days
-                  </p>
-                  {hazard.createdAt && (
-                    <p className="text-sm text-gray-500">
-                      Reported: {hazard.createdAt.seconds ? new Date(hazard.createdAt.seconds * 1000).toLocaleDateString() : ''}
-                    </p>
-                  )}
-                </div>
-              </Popup>
-            </Marker>
-          </React.Fragment>
-        ))}
-        {/* Overlay to block pointer events on the grey area */}
-        {map && <MapInteractionOverlay map={map} bounds={bounds} />}
-      </MapContainer>
+      {/* Loading overlay */}
+      {isLoading && (
+        <div className="absolute inset-0 bg-white bg-opacity-75 flex items-center justify-center z-50">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+        </div>
+      )}
+      
+      {/* Map container with enhanced styling */}
+      <div className="relative w-full h-full rounded-lg shadow-xl overflow-hidden">
+        <MapContainer
+          center={[-26.189, 28.075]}
+          zoom={14}
+          minZoom={14}
+          maxZoom={18}
+          scrollWheelZoom={true}
+          zoomSnap={0.05}
+          zoomDelta={0.05}
+          zoomAnimation={true}
+          zoomAnimationThreshold={4}
+          easeLinearity={0.35}
+          wheelDebounceTime={40}
+          wheelPxPerZoomLevel={60}
+          style={{ height: '100%', width: '100%', zIndex: 1 }}
+          crs={L.CRS.Simple}
+          maxBounds={bounds}
+          maxBoundsViscosity={1}
+          whenCreated={(mapInstance) => {
+            setMap(mapInstance);
+            console.log('Map created, loading set to false');
+          }}
+          ref={mapRef}
+        >
+          {/* Static image overlay with enhanced styling */}
+          <ImageOverlay 
+            url={imageUrl} 
+            bounds={bounds} 
+            interactive={true}
+            opacity={0.9}
+            className="map-overlay"
+          />
+          
+          {/* Map interaction overlay */}
+          <MapInteractionOverlay map={map} bounds={bounds} />
+          
+          {/* Handle map clicks */}
+          <MapClickHandler onMapClick={onMapClick} />
+
+          {/* Add a subtle map overlay for better contrast */}
+          <div 
+            className="absolute inset-0 pointer-events-none"
+            style={{
+              background: 'linear-gradient(rgba(255,255,255,0.1), rgba(255,255,255,0.1))',
+              zIndex: 2
+            }}
+          />
+
+          {/* Return to center button */}
+          <div className="absolute bottom-4 right-4 z-[1000]">
+            <button
+              onClick={() => map?.setView([-26.189, 28.075], 14)}
+              className="bg-white p-2 rounded-full shadow-lg hover:bg-gray-100 transition-colors duration-200"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+              </svg>
+            </button>
+          </div>
+
+          {/* Enhanced zoom controls */}
+          <div className="absolute top-4 right-4 z-[1000] flex flex-col gap-2">
+            <button
+              onClick={() => map?.zoomIn({ animate: true })}
+              className="bg-white p-2 rounded-full shadow-lg hover:bg-gray-100 transition-colors duration-200"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+              </svg>
+            </button>
+            <button
+              onClick={() => map?.zoomOut({ animate: true })}
+              className="bg-white p-2 rounded-full shadow-lg hover:bg-gray-100 transition-colors duration-200"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 12H4" />
+              </svg>
+            </button>
+          </div>
+
+          {/* Render hazard markers and circles */}
+          {visibleHazards.filter(filterHazardsByTravelMode).map((hazard) => (
+            <React.Fragment key={hazard.id}>
+              <Marker
+                position={[hazard.location.lat, hazard.location.lng]}
+                icon={getHazardIcon(hazard.type)}
+                eventHandlers={{
+                  mouseover: (e) => {
+                    e.target.openPopup();
+                  },
+                  mouseout: (e) => {
+                    e.target.closePopup();
+                  }
+                }}
+              >
+                <Popup
+                  className="custom-popup"
+                  closeButton={false}
+                  autoPan={false}
+                >
+                  <div className="p-2">
+                    <h3 className="font-semibold text-gray-800">{hazard.type.replace('_', ' ').toUpperCase()}</h3>
+                    <p className="text-sm text-gray-600">{hazard.description}</p>
+                  </div>
+                </Popup>
+              </Marker>
+              <Circle
+                center={[hazard.location.lat, hazard.location.lng]}
+                radius={50}
+                pathOptions={{
+                  color: getHazardColor(hazard.type),
+                  fillColor: getHazardColor(hazard.type),
+                  fillOpacity: 0.5,
+                  className: 'hazard-circle'
+                }}
+              />
+            </React.Fragment>
+          ))}
+        </MapContainer>
+      </div>
     </div>
   );
 };
