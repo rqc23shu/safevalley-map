@@ -248,15 +248,17 @@ const AdminPanel = () => {
     );
   }
 
-  const handleApprove = async (reportId) => {
+  const handleApprove = async (hazardId) => {
     try {
-      await updateDoc(doc(db, 'hazards', reportId), {
+      const hazardRef = doc(db, 'hazards', hazardId);
+      await updateDoc(hazardRef, {
         isApproved: true,
+        isRejected: false,
         approvedAt: new Date()
       });
     } catch (err) {
-      setError('Error approving report');
-      console.error('Approve error:', err);
+      console.error('Error approving hazard:', err);
+      alert('Failed to approve hazard. Please try again.');
     }
   };
 
@@ -510,6 +512,28 @@ const AdminPanel = () => {
                           </>
                         ) : (
                           <>
+                            {activeTab === 'pending' && (
+                              <>
+                                <button
+                                  onClick={() => handleApprove(hazard.id)}
+                                  className="p-2 text-green-600 hover:text-green-700 focus:outline-none"
+                                  title="Approve"
+                                >
+                                  <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                                  </svg>
+                                </button>
+                                <button
+                                  onClick={() => handleReject(hazard.id)}
+                                  className="p-2 text-yellow-600 hover:text-yellow-700 focus:outline-none"
+                                  title="Reject"
+                                >
+                                  <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                  </svg>
+                                </button>
+                              </>
+                            )}
                             <button
                               onClick={() => setEditHazard(hazard)}
                               className="p-2 text-blue-600 hover:text-blue-700 focus:outline-none"

@@ -27,11 +27,10 @@ L.Icon.Default.mergeOptions({
   shadowUrl: process.env.PUBLIC_URL + '/marker-shadow.png',
 });
 
-// Component to handle map clicks
-function MapClickHandler({ onMapClick }) {
-  useMapEvents({
+// Component to handle map clicks and bounds restriction
+function MapController({ onMapClick }) {
+  const map = useMapEvents({
     click: (e) => {
-      // Check if click is within bounds
       const { lat, lng } = e.latlng;
       if (
         lat >= bounds[0][0] && lat <= bounds[1][0] &&
@@ -41,6 +40,31 @@ function MapClickHandler({ onMapClick }) {
       }
     },
   });
+
+  // Restrict map movement to bounds
+  useEffect(() => {
+    if (!map) return;
+
+    // Set max bounds to prevent dragging outside the map area
+    const maxBounds = L.latLngBounds(bounds);
+    map.setMaxBounds(maxBounds);
+
+    // Set view to center of bounds
+    const center = [
+      (bounds[0][0] + bounds[1][0]) / 2,
+      (bounds[0][1] + bounds[1][1]) / 2
+    ];
+    map.setView(center, map.getZoom());
+
+    // Add bounds padding
+    const padding = L.point(50, 50);
+    map.setMaxBounds(maxBounds.pad(0.1));
+
+    return () => {
+      map.setMaxBounds(null);
+    };
+  }, [map]);
+
   return null;
 }
 
@@ -99,79 +123,91 @@ const getHazardIcon = (type) => {
 
 // Overlay component to block pointer events on the grey area
 function MapInteractionOverlay({ map, bounds }) {
-  const [overlayRects, setOverlayRects] = useState(null);
+  const [mapBounds, setMapBounds] = useState(null);
   const containerRef = useRef();
 
   useEffect(() => {
     if (!map) return;
-    function updateOverlayRects() {
-      // Get pixel positions of the image overlay corners
+    
+    function updateMapBounds() {
+      const container = map.getContainer();
       const sw = map.latLngToContainerPoint(bounds[0]);
       const ne = map.latLngToContainerPoint(bounds[1]);
-      // Calculate the rectangle for the image overlay
-      const left = Math.min(sw.x, ne.x);
-      const right = Math.max(sw.x, ne.x);
-      const top = Math.min(sw.y, ne.y);
-      const bottom = Math.max(sw.y, ne.y);
-      // Get map container size
-      const container = map.getContainer();
-      const width = container.offsetWidth;
-      const height = container.offsetHeight;
-      setOverlayRects({ left, right, top, bottom, width, height });
+      
+      setMapBounds({
+        left: Math.min(sw.x, ne.x),
+        right: Math.max(sw.x, ne.x),
+        top: Math.min(sw.y, ne.y),
+        bottom: Math.max(sw.y, ne.y),
+        width: container.offsetWidth,
+        height: container.offsetHeight
+      });
     }
-    updateOverlayRects();
-    map.on('move zoom resize', updateOverlayRects);
+
+    updateMapBounds();
+    map.on('move zoom resize', updateMapBounds);
     return () => {
-      map.off('move zoom resize', updateOverlayRects);
+      map.off('move zoom resize', updateMapBounds);
     };
   }, [map, bounds]);
 
-  if (!overlayRects) return null;
-  const { left, right, top, bottom, width, height } = overlayRects;
-  // Render four overlay divs: top, left, right, bottom
+  if (!mapBounds) return null;
+
   return (
-    <>
-      {/* Top overlay */}
-      <div style={{
+    <div 
+      ref={containerRef}
+      className="map-interaction-overlay"
+      style={{
         position: 'absolute',
-        left: 0,
         top: 0,
-        width: '100%',
-        height: top,
-        pointerEvents: 'auto',
-        zIndex: 1000,
-      }} />
-      {/* Bottom overlay */}
-      <div style={{
-        position: 'absolute',
         left: 0,
-        top: bottom,
-        width: '100%',
-        height: height - bottom,
-        pointerEvents: 'auto',
-        zIndex: 1000,
-      }} />
-      {/* Left overlay */}
+        right: 0,
+        bottom: 0,
+        pointerEvents: 'none',
+        zIndex: 400
+      }}
+    >
+      {/* Top area */}
       <div style={{
         position: 'absolute',
+        top: 0,
         left: 0,
-        top: top,
-        width: left,
-        height: bottom - top,
+        right: 0,
+        height: mapBounds.top,
         pointerEvents: 'auto',
-        zIndex: 1000,
+        backgroundColor: 'rgba(0, 0, 0, 0.1)'
       }} />
-      {/* Right overlay */}
+      {/* Bottom area */}
       <div style={{
         position: 'absolute',
-        left: right,
-        top: top,
-        width: width - right,
-        height: bottom - top,
+        bottom: 0,
+        left: 0,
+        right: 0,
+        height: `calc(100% - ${mapBounds.bottom}px)`,
         pointerEvents: 'auto',
-        zIndex: 1000,
+        backgroundColor: 'rgba(0, 0, 0, 0.1)'
       }} />
-    </>
+      {/* Left area */}
+      <div style={{
+        position: 'absolute',
+        top: mapBounds.top,
+        left: 0,
+        width: mapBounds.left,
+        height: mapBounds.bottom - mapBounds.top,
+        pointerEvents: 'auto',
+        backgroundColor: 'rgba(0, 0, 0, 0.1)'
+      }} />
+      {/* Right area */}
+      <div style={{
+        position: 'absolute',
+        top: mapBounds.top,
+        right: 0,
+        width: `calc(100% - ${mapBounds.right}px)`,
+        height: mapBounds.bottom - mapBounds.top,
+        pointerEvents: 'auto',
+        backgroundColor: 'rgba(0, 0, 0, 0.1)'
+      }} />
+    </div>
   );
 }
 
@@ -260,25 +296,15 @@ const MapComponent = ({ onMapClick, selectedTravelMode }) => {
       {/* Map container with enhanced styling */}
       <div className="relative w-full h-full rounded-lg shadow-xl overflow-hidden">
         <MapContainer
-          center={[-26.189, 28.075]}
-          zoom={14}
+          center={[(bounds[0][0] + bounds[1][0]) / 2, (bounds[0][1] + bounds[1][1]) / 2]}
+          zoom={15}
+          style={{ height: '100%', width: '100%', zIndex: 1 }}
           minZoom={14}
           maxZoom={18}
-          scrollWheelZoom={true}
-          zoomSnap={0.05}
-          zoomDelta={0.05}
-          zoomAnimation={true}
-          zoomAnimationThreshold={4}
-          easeLinearity={0.35}
-          wheelDebounceTime={40}
-          wheelPxPerZoomLevel={60}
-          style={{ height: '100%', width: '100%', zIndex: 1 }}
-          crs={L.CRS.Simple}
-          maxBounds={bounds}
-          maxBoundsViscosity={1}
-          whenCreated={(mapInstance) => {
-            setMap(mapInstance);
-          }}
+          zoomControl={true}
+          whenCreated={setMap}
+          maxBounds={L.latLngBounds(bounds).pad(0.1)}
+          maxBoundsViscosity={1.0}
           ref={mapRef}
         >
           {/* Static image overlay with enhanced styling */}
@@ -291,10 +317,10 @@ const MapComponent = ({ onMapClick, selectedTravelMode }) => {
           />
           
           {/* Map interaction overlay */}
-          <MapInteractionOverlay map={map} bounds={bounds} />
+          {map && <MapInteractionOverlay map={map} bounds={bounds} />}
           
           {/* Handle map clicks */}
-          <MapClickHandler onMapClick={onMapClick} />
+          <MapController onMapClick={onMapClick} />
 
           {/* Add a subtle map overlay for better contrast */}
           <div 

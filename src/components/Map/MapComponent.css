@@ -1,11 +1,60 @@
 /* Map container styling */
 .map-container {
-  transition: all 0.3s ease-in-out;
+  position: relative;
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
 }
 
 /* Map overlay styling */
 .map-overlay {
-  transition: opacity 0.3s ease-in-out;
+  pointer-events: none;
+}
+
+/* Map interaction overlay */
+.map-interaction-overlay {
+  pointer-events: none;
+  z-index: 400;
+}
+
+.map-interaction-overlay > div {
+  transition: background-color 0.2s ease-in-out;
+}
+
+.map-interaction-overlay > div:hover {
+  background-color: rgba(0, 0, 0, 0.15) !important;
+}
+
+/* Ensure Leaflet controls are above everything */
+.leaflet-control-container {
+  z-index: 1000 !important;
+}
+
+.leaflet-control-zoom {
+  border: none !important;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2) !important;
+}
+
+.leaflet-control-zoom a {
+  background-color: white !important;
+  color: #333 !important;
+  border: none !important;
+  width: 30px !important;
+  height: 30px !important;
+  line-height: 30px !important;
+  font-size: 18px !important;
+  transition: all 0.2s ease-in-out !important;
+}
+
+.leaflet-control-zoom a:hover {
+  background-color: #f8f9fa !important;
+  color: #000 !important;
+  transform: scale(1.05) !important;
+}
+
+.leaflet-control-zoom a:active {
+  background-color: #e9ecef !important;
+  transform: scale(0.95) !important;
 }
 
 /* Marker animations */
@@ -27,15 +76,6 @@
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 
-/* Zoom control animations */
-.zoom-control {
-  transition: all 0.2s ease-in-out;
-}
-
-.zoom-control:hover {
-  transform: scale(1.05);
-}
-
 /* Loading spinner animation */
 @keyframes spin {
   to {
@@ -45,11 +85,6 @@
 
 .loading-spinner {
   animation: spin 1s linear infinite;
-}
-
-/* Map interaction overlay */
-.map-interaction-overlay {
-  transition: opacity 0.3s ease-in-out;
 }
 
 /* Removed .hazard-circle styles */ 
