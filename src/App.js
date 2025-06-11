@@ -11,6 +11,7 @@ import ReportForm from './components/Forms/ReportForm';
 import AdminPanel from './components/Forms/AdminPanel';
 import LanguageSwitcher from './components/LanguageSwitcher';
 import IntroMessageModal from './components/Modals/IntroMessageModal';
+import PrototypeLoginPage from './components/Forms/PrototypeLoginPage';
 
 // Navigation component for better organization
 const Navigation = ({ selectedTravelMode, setSelectedTravelMode }) => {
@@ -64,6 +65,14 @@ const Navigation = ({ selectedTravelMode, setSelectedTravelMode }) => {
               }`}
             >
               {t('navigation.admin')}
+            </Link>
+
+            {/* Login link */}
+            <Link
+              to="/login"
+              className="px-4 py-2 rounded-lg bg-gray-200 text-gray-800 hover:bg-gray-300 transition-colors duration-200"
+            >
+              {t('navigation.login')}
             </Link>
           </div>
         </div>
@@ -149,6 +158,7 @@ function App() {
               }
             />
             <Route path="/admin" element={<AdminPanel />} />
+            <Route path="/login" element={<PrototypeLoginPage />} />
           </Routes>
         </main>
 

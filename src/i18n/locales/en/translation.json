@@ -20,7 +20,8 @@
     "home": "Home",
     "about": "About",
     "contact": "Contact",
-    "admin": "Admin Panel"
+    "admin": "Admin Panel",
+    "login": "Login"
   },
   "map": {
     "title": "SafeValley Map",
@@ -110,5 +111,13 @@
     "message1": "To report a hazard, simply click anywhere on the map to plot a marker and open the report form.",
     "message2": "You can also change the language using the buttons in the navigation bar.",
     "button": "Got it!"
+  },
+  "loginPage": {
+    "title": "Login functionality is a work in progress.",
+    "prototypeMessage": "Since this was a prototype, we would implement full authentication in the future, but we focused on more important points for this version.",
+    "emailAddress": "Email address",
+    "password": "Password",
+    "signIn": "Sign In",
+    "goBack": "Go Back"
   }
 } 
