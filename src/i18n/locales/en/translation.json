@@ -95,7 +95,7 @@
     "submit": "Submit Report",
     "errorSubmit": "Failed to submit report. Retrying...",
     "errorSubmitFinal": "Failed to submit report after multiple attempts. Please try again later.",
-    "minCharsHelper": "Minimum 5 characters required in the description.",
+    "minCharsHelper": "Minimum 10 characters required in the description.",
     "photoUpload": "Photo",
     "photoUploadOptional": "(optional)",
     "choosePhoto": "Choose a photo...",

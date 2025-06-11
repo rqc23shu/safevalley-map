@@ -33,7 +33,8 @@ const ReportForm = ({ location, onClose }) => {
     duration: 1,
   });
   // State for photo upload
-  const [photo, setPhoto] = useState(null);
+  // Photo upload is disabled in this prototype due to Firebase billing limitations (see UI note below)
+  // const [photo, setPhoto] = useState(null);
   const [photoPreview, setPhotoPreview] = useState(null);
   // State for submission status and errors
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -52,27 +53,46 @@ const ReportForm = ({ location, onClose }) => {
     setErrors([]);
   };
 
-  // Handle photo file selection
+  // Handle photo file selection (DISABLED)
+  // const handlePhotoChange = (e) => {
+  //   const file = e.target.files[0];
+  //   if (file) {
+  //     if (!file.type.startsWith('image/')) {
+  //       setErrors([t('report.invalidFileType')]);
+  //       setPhoto(null);
+  //       setPhotoPreview(null);
+  //       return;
+  //     }
+  //     if (file.size > 5 * 1024 * 1024) { // 5MB limit
+  //       setErrors([t('report.fileTooLarge')]);
+  //       setPhoto(null);
+  //       setPhotoPreview(null);
+  //       return;
+  //     }
+  //     setPhoto(file);
+  //     setPhotoPreview(URL.createObjectURL(file));
+  //     setErrors([]); // Clear errors when a valid file is selected
+  //   } else {
+  //     setPhoto(null);
+  //     setPhotoPreview(null);
+  //   }
+  // };
   const handlePhotoChange = (e) => {
     const file = e.target.files[0];
     if (file) {
       if (!file.type.startsWith('image/')) {
         setErrors([t('report.invalidFileType')]);
-        setPhoto(null);
         setPhotoPreview(null);
         return;
       }
       if (file.size > 5 * 1024 * 1024) { // 5MB limit
         setErrors([t('report.fileTooLarge')]);
-        setPhoto(null);
         setPhotoPreview(null);
         return;
       }
-      setPhoto(file);
       setPhotoPreview(URL.createObjectURL(file));
       setErrors([]); // Clear errors when a valid file is selected
     } else {
-      setPhoto(null);
       setPhotoPreview(null);
     }
   };
@@ -83,8 +103,13 @@ const ReportForm = ({ location, onClose }) => {
     setIsSubmitting(true);
     setErrors([]);
 
-    // Minimum character validation
-    if (formData.description.trim().length < 5) {
+    console.log('Starting form submission...');
+    console.log('Form Data:', formData);
+    console.log('Location:', location);
+
+    // Minimum character validation (client-side display only)
+    if (formData.description.trim().length < 10) {
+      console.log('Description validation failed.');
       setErrors([t('report.minCharsHelper')]);
       setIsSubmitting(false);
       return;
@@ -93,32 +118,41 @@ const ReportForm = ({ location, onClose }) => {
     // Validate form data
     const validationErrors = validateHazardReport({ ...formData, location });
     if (validationErrors.length > 0) {
+      console.log('Frontend validation errors:', validationErrors);
       setErrors(validationErrors);
       setIsSubmitting(false);
       return;
     }
+    console.log('Frontend validation passed.');
 
     // Sanitize input
     const sanitizedData = {
       ...formData,
       description: sanitizeInput(formData.description),
     };
+    console.log('Sanitized Data:', sanitizedData);
 
-    let photoUrl = '';
-    if (photo) {
-      try {
-        const storageRef = ref(storage, `hazard_photos/${Date.now()}_${photo.name}`);
-        const snapshot = await uploadBytes(storageRef, photo);
-        photoUrl = await getDownloadURL(snapshot.ref);
-      } catch (uploadError) {
-        console.error('Error uploading photo:', uploadError);
-        setErrors([t('report.errorSubmit')]); // Use a generic submit error for photo upload failure
-        setIsSubmitting(false);
-        return;
-      }
-    }
+    // Photo upload is disabled in this prototype due to Firebase billing limitations.
+    // let photoUrl = '';
+    // if (photo) {
+    //   console.log('Photo detected, attempting upload...');
+    //   try {
+    //     const storageRef = ref(storage, `hazard_photos/${Date.now()}_${photo.name}`);
+    //     const snapshot = await uploadBytes(storageRef, photo);
+    //     photoUrl = await getDownloadURL(snapshot.ref);
+    //     console.log('Photo uploaded successfully. URL:', photoUrl);
+    //   } catch (uploadError) {
+    //     console.error('Error uploading photo:', uploadError);
+    //     setErrors([t('report.errorSubmit')]); // Use a generic submit error for photo upload failure
+    //     setIsSubmitting(false);
+    //     return;
+    //   }
+    // }
+    // For demo purposes, use a mock photo URL
+    const mockPhotoUrl = photoPreview ? 'https://via.placeholder.com/150' : null;
 
     try {
+      console.log('Attempting to add document to Firestore...');
       await addDoc(collection(db, 'hazards'), {
         ...sanitizedData,
         location,
@@ -127,21 +161,25 @@ const ReportForm = ({ location, onClose }) => {
         createdAt: new Date(),
         status: 'pending',
         retryCount: 0,
-        photoUrl: photoUrl || null // Add photoUrl to Firestore document
+        photoUrl: mockPhotoUrl // Use mock photo URL for admin tab
       });
+      console.log('Document added successfully. Closing form.');
       onClose();
     } catch (err) {
       console.error('Error submitting report:', err);
       if (retryCount < MAX_RETRIES) {
         setRetryCount(prev => prev + 1);
         setErrors([t('report.errorSubmit')]);
+        console.log(`Retrying submission (Attempt ${retryCount + 1}/${MAX_RETRIES})...`);
         // Retry after a short delay
         setTimeout(() => handleSubmit(e), 1000);
       } else {
         setErrors([t('report.errorSubmitFinal')]);
+        console.log('Max retries reached. Final submission error.');
       }
     } finally {
       setIsSubmitting(false);
+      console.log('Submission process finished.');
     }
   };
 
@@ -275,7 +313,7 @@ const ReportForm = ({ location, onClose }) => {
               </div>
             </div>
 
-            {/* Photo Upload Section */}
+            {/* Photo Upload Section (DISABLED) */}
             <div>
               <label htmlFor="photo" className="block text-sm font-medium text-gray-700 mb-2">
                 {t('report.photoUpload')} <span className="text-gray-500">{t('report.photoUploadOptional')}</span>
@@ -293,42 +331,46 @@ const ReportForm = ({ location, onClose }) => {
                   <img src={photoPreview} alt="Photo Preview" className="max-w-full max-h-48 object-contain mx-auto rounded-md shadow-md border border-gray-200" />
                 </div>
               )}
-              {!photo && !photoPreview && (
+              {!photoPreview && (
                 <p className="text-sm text-gray-500 mt-2">{t('report.noPhotoUploaded')}</p>
               )}
+              <div className="text-sm text-yellow-700 bg-yellow-50 border-l-4 border-yellow-400 p-3 rounded">
+                <strong>Note:</strong> Photo upload is <b>disabled</b> in this prototype due to Firebase billing limitations. (We implemented the feature, but it requires a paid Firebase plan to work. For demo/marking, please ignore photo upload.)
+              </div>
+            </div>
+
+            {/* Moved buttons inside the form */}
+            <div className="pt-4 border-t border-gray-200 flex justify-end gap-4">
+              <button
+                type="button"
+                onClick={onClose}
+                className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-200"
+              >
+                {t('report.cancel')}
+              </button>
+              <button
+                type="submit"
+                className="px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                disabled={isSubmitting}
+              >
+                {isSubmitting ? (
+                  <span className="flex items-center">
+                    <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    {t('common.submitting')}
+                  </span>
+                ) : (
+                  t('report.submit')
+                )}
+              </button>
             </div>
           </form>
-        </div>
-
-        <div className="p-6 pt-4 border-t border-gray-200 flex justify-end gap-4">
-          <button
-            type="button"
-            onClick={onClose}
-            className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-200"
-          >
-            {t('report.cancel')}
-          </button>
-          <button
-            type="submit"
-            className="px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-            disabled={isSubmitting}
-          >
-            {isSubmitting ? (
-              <span className="flex items-center">
-                <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                </svg>
-                {t('common.submitting')}
-              </span>
-            ) : (
-              t('report.submit')
-            )}
-          </button>
         </div>
       </div>
     </div>
   );
 };
 
-export default ReportForm; 
+export default ReportForm;

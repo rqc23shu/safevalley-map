@@ -451,7 +451,7 @@ const AdminPanel = () => {
                       <p className="mt-2 text-gray-700 text-sm break-words whitespace-pre-wrap">{hazard.description}</p>
 
                       {/* Photo Display & View Button */}
-                      <div className="mt-4">
+                      <div className="mt-2">
                         {hazard.photoUrl ? (
                           <button
                             onClick={() => setSelectedPhotoUrl(hazard.photoUrl)}
@@ -471,7 +471,7 @@ const AdminPanel = () => {
                         <span>{t('admin.hazards.duration')}: {hazard.duration} days</span>
                       </div>
                     </div>
-                    <div className="flex-shrink-0 flex flex-col items-end space-y-2">
+                    <div className="flex-shrink-0 flex items-center space-x-2">
                       {activeTab === 'deleted' ? (
                         <>
                           <button
