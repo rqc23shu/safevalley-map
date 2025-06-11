@@ -30,6 +30,8 @@
     "unsafe": "Unsafe Area"
   },
   "admin": {
+    "panelTitle": "Admin Panel",
+    "subtitle": "Manage and moderate reported hazards.",
     "login": {
       "title": "Admin Login",
       "password": "Password",
