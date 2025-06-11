@@ -78,5 +78,17 @@
       "loading": "Error loading hazards",
       "incorrectPassword": "Incorrect password"
     }
+  },
+  "report": {
+    "title": "Report a Hazard",
+    "hazardType": "Hazard Type",
+    "description": "Description",
+    "descriptionPlaceholder": "Please provide a detailed description of the hazard...",
+    "duration": "Duration (days)",
+    "days": "days",
+    "cancel": "Cancel",
+    "submit": "Submit Report",
+    "errorSubmit": "Failed to submit report. Retrying...",
+    "errorSubmitFinal": "Failed to submit report after multiple attempts. Please try again later."
   }
 } 

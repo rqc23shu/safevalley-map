@@ -78,5 +78,17 @@
       "loading": "Impazamo ekulayisheni iingozi",
       "incorrectPassword": "Igama lokugqitha elingalungileyo"
     }
+  },
+  "report": {
+    "title": "Xela Ingozi",
+    "hazardType": "Uhlobo Lwengozi",
+    "description": "Inkcazo",
+    "descriptionPlaceholder": "Nceda unikeze inkcazo eneenkcukacha yengozi...",
+    "duration": "Ubude bexesha (iintsuku)",
+    "days": "iintsuku",
+    "cancel": "Rhoxisa",
+    "submit": "Ngenisa Ingxelo",
+    "errorSubmit": "Ayiphumelelanga ukungenisa ingxelo. Kuyazanywa kwakhona...",
+    "errorSubmitFinal": "Ayiphumelelanga ukungenisa ingxelo emva kwemizamo emininzi. Nceda uzame kwakhona kamva."
   }
 } 

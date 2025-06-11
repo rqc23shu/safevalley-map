@@ -78,5 +78,17 @@
       "loading": "Fout met laai van gevare",
       "incorrectPassword": "Verkeerde wagwoord"
     }
+  },
+  "report": {
+    "title": "Rapporteer 'n Gevaar",
+    "hazardType": "Gevaar Tipe",
+    "description": "Beskrywing",
+    "descriptionPlaceholder": "Verskaf asseblief 'n volledige beskrywing van die gevaar...",
+    "duration": "Duur (dae)",
+    "days": "dae",
+    "cancel": "Kanselleer",
+    "submit": "Dien Verslag In",
+    "errorSubmit": "Kon nie verslag indien nie. Probeer weer...",
+    "errorSubmitFinal": "Kon nie verslag indien na verskeie pogings nie. Probeer later weer."
   }
 } 

@@ -78,5 +78,17 @@
       "loading": "Iphutha ekulayisheni izingozi",
       "incorrectPassword": "Iphasiwedi engalungile"
     }
+  },
+  "report": {
+    "title": "Bika Ingozi",
+    "hazardType": "Uhlobo Lwengozi",
+    "description": "Incazelo",
+    "descriptionPlaceholder": "Sicela unikeze incazelo eningiliziwe yengozi...",
+    "duration": "Ubude Besikhathi (izinsuku)",
+    "days": "izinsuku",
+    "cancel": "Khansela",
+    "submit": "Thumela Umbiko",
+    "errorSubmit": "Kwehlulekile ukuthumela umbiko. Kuyazanywa futhi...",
+    "errorSubmitFinal": "Kwehlulekile ukuthumela umbiko ngemva kwemizamo eminingana. Sicela uzame futhi kamuva."
   }
 } 
