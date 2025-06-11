@@ -254,7 +254,10 @@ const AdminPanel = () => {
       await updateDoc(hazardRef, {
         isApproved: true,
         isRejected: false,
-        approvedAt: new Date()
+        isDeleted: false,
+        approvedAt: new Date(),
+        rejectedAt: null,
+        deletedAt: null
       });
     } catch (err) {
       console.error('Error approving hazard:', err);
@@ -291,7 +294,11 @@ const AdminPanel = () => {
     try {
       await updateDoc(doc(db, 'hazards', reportId), {
         isDeleted: false,
-        deletedAt: null
+        isApproved: false,
+        isRejected: false,
+        deletedAt: null,
+        rejectedAt: null,
+        approvedAt: null
       });
     } catch (err) {
       setError('Error restoring report');
@@ -533,6 +540,17 @@ const AdminPanel = () => {
                                   </svg>
                                 </button>
                               </>
+                            )}
+                            {activeTab === 'rejected' && (
+                              <button
+                                onClick={() => handleApprove(hazard.id)}
+                                className="p-2 text-green-600 hover:text-green-700 focus:outline-none"
+                                title="Approve"
+                              >
+                                <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                                </svg>
+                              </button>
                             )}
                             <button
                               onClick={() => setEditHazard(hazard)}
