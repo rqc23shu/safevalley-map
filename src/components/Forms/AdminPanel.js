@@ -72,6 +72,9 @@ const EditHazardModal = ({ hazard, onClose, onSave }) => {
               <option value="load_shedding">Load Shedding</option>
               <option value="pothole">Pothole</option>
               <option value="dumping">Illegal Dumping</option>
+              <option value="water_leak">Water Leak</option>
+              <option value="sewerage_leak">Sewerage Leak</option>
+              <option value="flooding">Flooding</option>
             </select>
           </div>
           <div>

@@ -17,6 +17,15 @@ const bounds = [
 // Static image URL (should be in public folder)
 const imageUrl = process.env.PUBLIC_URL + '/map.png';
 
+// Fix for default marker icon in React
+// (Make sure marker-icon.png, marker-icon-2x.png, marker-shadow.png are in public/)
+delete L.Icon.Default.prototype._getIconUrl;
+L.Icon.Default.mergeOptions({
+  iconUrl: process.env.PUBLIC_URL + '/marker-icon.png',
+  iconRetinaUrl: process.env.PUBLIC_URL + '/marker-icon-2x.png',
+  shadowUrl: process.env.PUBLIC_URL + '/marker-shadow.png',
+});
+
 // Component to handle map clicks
 function MapClickHandler({ onMapClick }) {
   useMapEvents({
@@ -38,9 +47,46 @@ const getHazardColor = (type) => {
       return 'rgba(59,130,246,0.5)'; // blue
     case 'dumping':
       return 'rgba(34,197,94,0.5)'; // green
+    case 'water_leak':
+      return 'rgba(0,191,255,0.5)'; // deep sky blue
+    case 'sewerage_leak':
+      return 'rgba(128,0,128,0.5)'; // purple
+    case 'flooding':
+      return 'rgba(30,64,175,0.5)'; // dark blue
     default:
       return 'rgba(59,130,246,0.5)';
   }
+};
+
+// Helper to get marker icon for hazard type
+const getHazardIcon = (type) => {
+  let iconUrl = '';
+  switch (type) {
+    case 'crime':
+      iconUrl = process.env.PUBLIC_URL + '/marker-crime.png'; break;
+    case 'load_shedding':
+      iconUrl = process.env.PUBLIC_URL + '/marker-load-shedding.png'; break;
+    case 'pothole':
+      iconUrl = process.env.PUBLIC_URL + '/marker-pothole.png'; break;
+    case 'dumping':
+      iconUrl = process.env.PUBLIC_URL + '/marker-dumping.png'; break;
+    case 'water_leak':
+      iconUrl = process.env.PUBLIC_URL + '/marker-water-leak.png'; break;
+    case 'sewerage_leak':
+      iconUrl = process.env.PUBLIC_URL + '/marker-sewerage-leak.png'; break;
+    case 'flooding':
+      iconUrl = process.env.PUBLIC_URL + '/marker-flooding.png'; break;
+    default:
+      iconUrl = process.env.PUBLIC_URL + '/marker-pothole.png';
+  }
+  return new L.Icon({
+    iconUrl,
+    iconSize: [25, 41],
+    iconAnchor: [12, 41],
+    popupAnchor: [1, -34],
+    shadowUrl: process.env.PUBLIC_URL + '/marker-shadow.png',
+    shadowSize: [41, 41],
+  });
 };
 
 const MapComponent = ({ onMapClick, selectedTravelMode }) => {
@@ -89,7 +135,7 @@ const MapComponent = ({ onMapClick, selectedTravelMode }) => {
   });
 
   return (
-    <div className="w-full h-[70vh] relative bg-gray-50" style={{ backgroundColor: 'transparent' }}>
+    <div className="w-full h-[70vh] relative" style={{ backgroundColor: 'transparent' }}>
       <MapContainer
         center={[-26.189, 28.075]}
         zoom={16}
@@ -107,7 +153,7 @@ const MapComponent = ({ onMapClick, selectedTravelMode }) => {
         {/* Render hazard markers and circles */}
         {visibleHazards.filter(filterHazardsByTravelMode).map((hazard) => (
           <React.Fragment key={hazard.id}>
-            <Circle
+            {/* <Circle
               center={[hazard.location.lat, hazard.location.lng]}
               radius={Math.min(Number(hazard.radius) || 100, 500)}
               pathOptions={{
@@ -116,8 +162,8 @@ const MapComponent = ({ onMapClick, selectedTravelMode }) => {
                 fillOpacity: 0.5,
                 weight: 2,
               }}
-            />
-            <Marker position={[hazard.location.lat, hazard.location.lng]}>
+            /> */}
+            <Marker position={[hazard.location.lat, hazard.location.lng]} icon={getHazardIcon(hazard.type)}>
               <Popup>
                 <div className="p-2">
                   <h3 className="font-bold capitalize">{hazard.type.replace('_', ' ')}</h3>

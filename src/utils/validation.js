@@ -10,7 +10,7 @@ export const validateHazardReport = (data) => {
   const errors = [];
 
   // Type validation
-  if (!data.type || !['crime', 'load_shedding', 'pothole', 'dumping'].includes(data.type)) {
+  if (!data.type || !['crime', 'load_shedding', 'pothole', 'dumping', 'water_leak', 'sewerage_leak', 'flooding'].includes(data.type)) {
     errors.push('Please select a valid hazard type');
   }
 
