@@ -9,7 +9,7 @@
     "cycling": "Ukukhwela Ibhayisikile",
     "car": "Imoto",
     "taxi": "Itekisi",
-    "footer": "I-SafeValley Map - Ukwenza i-Makers Valley Ikhuselekile"
+    "footer": "SafeValley Map - Ukwenza i-Makers Valley Ikhuselekile"
   },
   "navigation": {
     "home": "Ekhaya",
@@ -18,7 +18,7 @@
     "admin": "Iphaneli YokuLawula"
   },
   "map": {
-    "title": "I-SafeValley Map",
+    "title": "SafeValley Map",
     "description": "Hlola iindawo ezikhuselekileyo kwilali yakho",
     "legend": "I-Legend Yemephu",
     "safe": "Indawo Ekhuselekileyo",

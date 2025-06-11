@@ -1,6 +1,6 @@
 {
   "common": {
-    "welcome": "Welkom by SafeValley Kaart",
+    "welcome": "Welkom by SafeValley Map",
     "search": "Soek",
     "submit": "Dien in",
     "cancel": "Kanselleer",
@@ -9,7 +9,7 @@
     "cycling": "Fietsry",
     "car": "Motor",
     "taxi": "Taxi",
-    "footer": "SafeValley Kaart - Maak Makers Valley Veiliger"
+    "footer": "SafeValley Map - Maak Makers Valley Veiliger"
   },
   "navigation": {
     "home": "Tuis",
@@ -18,7 +18,7 @@
     "admin": "Admin Paneel"
   },
   "map": {
-    "title": "SafeValley Kaart",
+    "title": "SafeValley Map",
     "description": "Verken veilige gebiede in jou gemeenskap",
     "legend": "Kaart Legende",
     "safe": "Veilige Gebied",
