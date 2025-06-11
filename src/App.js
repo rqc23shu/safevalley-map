@@ -3,10 +3,66 @@
 // Handles routing, navigation, travel mode filter, and integration of map, report form, and admin panel
 
 import React, { useState } from 'react';
-import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Link, useLocation } from 'react-router-dom';
 import MapComponent from './components/Map/MapComponent';
 import ReportForm from './components/Forms/ReportForm';
 import AdminPanel from './components/Forms/AdminPanel';
+
+// Navigation component for better organization
+const Navigation = ({ selectedTravelMode, setSelectedTravelMode }) => {
+  const location = useLocation();
+  const isAdmin = location.pathname === '/admin';
+
+  return (
+    <nav className="bg-white shadow-md">
+      <div className="container mx-auto px-4 py-4">
+        <div className="flex flex-col md:flex-row justify-between items-center gap-4">
+          {/* App title and logo */}
+          <Link to="/" className="flex items-center gap-2 group">
+            <span className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-blue-800 bg-clip-text text-transparent">
+              SafeValley Map
+            </span>
+          </Link>
+
+          {/* Navigation items and filters */}
+          <div className="flex items-center gap-6">
+            {/* Travel mode filter */}
+            <div className="relative">
+              <select
+                value={selectedTravelMode}
+                onChange={(e) => setSelectedTravelMode(e.target.value)}
+                className="appearance-none bg-white border border-gray-300 rounded-lg px-4 py-2 pr-8 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+              >
+                <option value="all">All Travel Modes</option>
+                <option value="walking">Walking</option>
+                <option value="cycling">Cycling</option>
+                <option value="car">Car</option>
+                <option value="taxi">Taxi</option>
+              </select>
+              <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+                <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                  <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/>
+                </svg>
+              </div>
+            </div>
+
+            {/* Admin panel link */}
+            <Link
+              to="/admin"
+              className={`px-4 py-2 rounded-lg transition-all duration-200 ${
+                isAdmin
+                  ? 'bg-blue-600 text-white'
+                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+              }`}
+            >
+              Admin Panel
+            </Link>
+          </div>
+        </div>
+      </div>
+    </nav>
+  );
+};
 
 /**
  * App - Main entry point for the SafeValley Map web app.
@@ -34,65 +90,39 @@ function App() {
   return (
     <Router>
       <div className="min-h-screen flex flex-col bg-gray-50">
-        {/* Navigation bar with app title, travel mode filter, and admin panel link */}
-        <nav className="bg-white shadow-sm">
-          <div className="container mx-auto px-4 py-3">
-            <div className="flex justify-between items-center">
-              {/* App title links to home */}
-              <Link to="/" className="text-2xl font-bold text-primary">
-                SafeValley Map
-              </Link>
-              <div className="flex items-center gap-4">
-                {/* Travel mode filter dropdown */}
-                <select
-                  value={selectedTravelMode}
-                  onChange={(e) => setSelectedTravelMode(e.target.value)}
-                  className="input max-w-xs"
-                >
-                  <option value="all">All Travel Modes</option>
-                  <option value="walking">Walking</option>
-                  <option value="cycling">Cycling</option>
-                  <option value="car">Car</option>
-                  <option value="taxi">Taxi</option>
-                </select>
-                {/* Link to admin panel */}
-                <Link
-                  to="/admin"
-                  className="btn btn-secondary"
-                >
-                  Admin Panel
-                </Link>
-              </div>
-            </div>
-          </div>
-        </nav>
+        <Navigation
+          selectedTravelMode={selectedTravelMode}
+          setSelectedTravelMode={setSelectedTravelMode}
+        />
 
-        {/* Main content: routes for map and admin panel */}
         <main className="flex-1 flex flex-col min-h-0">
           <Routes>
-            {/* Home route: map and report form */}
             <Route
               path="/"
               element={
                 <>
-                  <MapComponent
-                    onMapClick={handleMapClick}
-                    selectedTravelMode={selectedTravelMode}
-                  />
-                  {/* Show report form modal if a location is selected */}
-                  {showReportForm && selectedLocation && (
-                    <ReportForm
-                      location={selectedLocation}
-                      onClose={() => {
-                        setShowReportForm(false);
-                        setSelectedLocation(null);
-                      }}
+                  <div className="relative flex-1">
+                    <MapComponent
+                      onMapClick={handleMapClick}
+                      selectedTravelMode={selectedTravelMode}
                     />
-                  )}
+                    {showReportForm && selectedLocation && (
+                      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+                        <div className="bg-white rounded-lg shadow-xl max-w-lg w-full max-h-[90vh] overflow-y-auto">
+                          <ReportForm
+                            location={selectedLocation}
+                            onClose={() => {
+                              setShowReportForm(false);
+                              setSelectedLocation(null);
+                            }}
+                          />
+                        </div>
+                      </div>
+                    )}
+                  </div>
                 </>
               }
             />
-            {/* Admin panel route */}
             <Route path="/admin" element={<AdminPanel />} />
           </Routes>
         </main>
