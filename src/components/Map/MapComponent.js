@@ -243,23 +243,19 @@ const MapComponent = ({ onMapClick, selectedTravelMode }) => {
     return () => unsubscribe();
   }, []);
 
-  // Filter hazards by selected travel mode
+  // Replace filterHazardsByTravelMode with the new logic
+  const hazardVisibility = {
+    walking: ['crime', 'load_shedding', 'dumping', 'water_leak', 'sewerage_leak', 'flooding'],
+    cycling: ['crime', 'load_shedding', 'pothole', 'dumping', 'water_leak', 'sewerage_leak', 'flooding'],
+    car: ['crime', 'load_shedding', 'pothole', 'flooding'],
+    taxi: ['crime', 'load_shedding', 'pothole', 'flooding'],
+    all: ['crime', 'load_shedding', 'pothole', 'dumping', 'water_leak', 'sewerage_leak', 'flooding'],
+  };
+
   const filterHazardsByTravelMode = (hazard) => {
-    const isVisible = (() => {
-      switch (selectedTravelMode) {
-        case 'walking':
-          return ['crime', 'load_shedding', 'pothole', 'dumping'].includes(hazard.type);
-        case 'cycling':
-          return ['pothole', 'dumping', 'crime', 'load_shedding'].includes(hazard.type);
-        case 'car':
-          return ['dumping', 'load_shedding', 'crime'].includes(hazard.type);
-        case 'taxi':
-          return ['crime', 'load_shedding'].includes(hazard.type);
-        default:
-          return true;
-      }
-    })();
-    return isVisible;
+    if (selectedTravelMode === 'all') return true;
+    const allowed = hazardVisibility[selectedTravelMode] || hazardVisibility['all'];
+    return allowed.includes(hazard.type);
   };
 
   // Filter out hazards whose duration has expired
