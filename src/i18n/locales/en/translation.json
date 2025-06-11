@@ -104,5 +104,11 @@
     "noPhotoUploaded": "No photo uploaded.",
     "invalidFileType": "Only image files (JPG, PNG, GIF) are allowed.",
     "fileTooLarge": "File is too large. Maximum size is 5MB."
+  },
+  "intro": {
+    "title": "Welcome to SafeValley Map!",
+    "message1": "To report a hazard, simply click anywhere on the map to plot a marker and open the report form.",
+    "message2": "You can also change the language using the buttons in the navigation bar.",
+    "button": "Got it!"
   }
 } 

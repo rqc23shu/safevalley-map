@@ -2,7 +2,7 @@
 // Main application component for SafeValley Map
 // Handles routing, navigation, travel mode filter, and integration of map, report form, and admin panel
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Link, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import './i18n/config';
@@ -10,6 +10,7 @@ import MapComponent from './components/Map/MapComponent';
 import ReportForm from './components/Forms/ReportForm';
 import AdminPanel from './components/Forms/AdminPanel';
 import LanguageSwitcher from './components/LanguageSwitcher';
+import IntroMessageModal from './components/Modals/IntroMessageModal';
 
 // Navigation component for better organization
 const Navigation = ({ selectedTravelMode, setSelectedTravelMode }) => {
@@ -85,6 +86,22 @@ function App() {
   const [selectedLocation, setSelectedLocation] = useState(null);
   // State for the selected travel mode filter
   const [selectedTravelMode, setSelectedTravelMode] = useState('all');
+  // State for showing the introductory message modal
+  const [showIntroModal, setShowIntroModal] = useState(false);
+
+  // Check if user has seen the intro message on component mount
+  useEffect(() => {
+    const hasSeenIntro = localStorage.getItem('hasSeenIntroMessage');
+    if (!hasSeenIntro) {
+      setShowIntroModal(true);
+    }
+  }, []);
+
+  // Handler to close the intro message modal and set flag in localStorage
+  const handleCloseIntroModal = () => {
+    setShowIntroModal(false);
+    localStorage.setItem('hasSeenIntroMessage', 'true');
+  };
 
   // Handler for map click: opens the report form at the clicked location
   const handleMapClick = (e) => {
@@ -134,6 +151,9 @@ function App() {
             <Route path="/admin" element={<AdminPanel />} />
           </Routes>
         </main>
+
+        {/* Render IntroMessageModal if showIntroModal is true */}
+        {showIntroModal && <IntroMessageModal onClose={handleCloseIntroModal} />}
 
         {/* Footer */}
         <footer className="bg-white border-t mt-auto">
