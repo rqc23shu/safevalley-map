@@ -3,12 +3,19 @@
     "welcome": "Welcome to SafeValley Map",
     "search": "Search",
     "submit": "Submit",
-    "cancel": "Cancel"
+    "cancel": "Cancel",
+    "allTravelModes": "All Travel Modes",
+    "walking": "Walking",
+    "cycling": "Cycling",
+    "car": "Car",
+    "taxi": "Taxi",
+    "footer": "SafeValley Map - Making Makers Valley Safer"
   },
   "navigation": {
     "home": "Home",
     "about": "About",
-    "contact": "Contact"
+    "contact": "Contact",
+    "admin": "Admin Panel"
   },
   "map": {
     "title": "SafeValley Map",

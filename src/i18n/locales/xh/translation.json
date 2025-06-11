@@ -3,12 +3,19 @@
     "welcome": "Wamkelekile ku-SafeValley Map",
     "search": "Khangela",
     "submit": "Ngenisa",
-    "cancel": "Rhoxisa"
+    "cancel": "Rhoxisa",
+    "allTravelModes": "Zonke Iindlela Zokuhamba",
+    "walking": "Ukuhamba Ngeenyawo",
+    "cycling": "Ukukhwela Ibhayisikile",
+    "car": "Imoto",
+    "taxi": "Itekisi",
+    "footer": "I-SafeValley Map - Ukwenza i-Makers Valley Ikhuselekile"
   },
   "navigation": {
     "home": "Ekhaya",
     "about": "Malunga Nathi",
-    "contact": "Qhagamshelana"
+    "contact": "Qhagamshelana",
+    "admin": "Iphaneli YokuLawula"
   },
   "map": {
     "title": "I-SafeValley Map",

@@ -3,12 +3,19 @@
     "welcome": "Welkom by SafeValley Kaart",
     "search": "Soek",
     "submit": "Dien in",
-    "cancel": "Kanselleer"
+    "cancel": "Kanselleer",
+    "allTravelModes": "Alle Vervoermodusse",
+    "walking": "Stap",
+    "cycling": "Fietsry",
+    "car": "Motor",
+    "taxi": "Taxi",
+    "footer": "SafeValley Kaart - Maak Makers Valley Veiliger"
   },
   "navigation": {
     "home": "Tuis",
     "about": "Oor Ons",
-    "contact": "Kontak"
+    "contact": "Kontak",
+    "admin": "Admin Paneel"
   },
   "map": {
     "title": "SafeValley Kaart",

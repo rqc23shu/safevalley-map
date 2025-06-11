@@ -3,12 +3,19 @@
     "welcome": "Wamukelekile ku-SafeValley Map",
     "search": "Sesha",
     "submit": "Hambisa",
-    "cancel": "Khansela"
+    "cancel": "Khansela",
+    "allTravelModes": "Zonke Izindlela Zokuhamba",
+    "walking": "Ukuhamba Ngezinyawo",
+    "cycling": "Ukugibela Ibhayisikili",
+    "car": "Imoto",
+    "taxi": "Itekisi",
+    "footer": "I-SafeValley Map - Ukwenza i-Makers Valley Iphephile"
   },
   "navigation": {
     "home": "Ekhaya",
     "about": "Mayelana Nathi",
-    "contact": "Xhumana"
+    "contact": "Xhumana",
+    "admin": "Iphaneli Yokuphatha"
   },
   "map": {
     "title": "I-SafeValley Map",

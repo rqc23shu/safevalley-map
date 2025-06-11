@@ -4,14 +4,18 @@
 
 import React, { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Link, useLocation } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
+import './i18n/config';
 import MapComponent from './components/Map/MapComponent';
 import ReportForm from './components/Forms/ReportForm';
 import AdminPanel from './components/Forms/AdminPanel';
+import LanguageSwitcher from './components/LanguageSwitcher';
 
 // Navigation component for better organization
 const Navigation = ({ selectedTravelMode, setSelectedTravelMode }) => {
   const location = useLocation();
   const isAdmin = location.pathname === '/admin';
+  const { t } = useTranslation();
 
   return (
     <nav className="bg-white shadow-md">
@@ -20,12 +24,15 @@ const Navigation = ({ selectedTravelMode, setSelectedTravelMode }) => {
           {/* App title and logo */}
           <Link to="/" className="flex items-center gap-2 group">
             <span className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-blue-800 bg-clip-text text-transparent">
-              SafeValley Map
+              {t('map.title')}
             </span>
           </Link>
 
           {/* Navigation items and filters */}
           <div className="flex items-center gap-6">
+            {/* Language Switcher */}
+            <LanguageSwitcher />
+
             {/* Travel mode filter */}
             <div className="relative">
               <select
@@ -33,11 +40,11 @@ const Navigation = ({ selectedTravelMode, setSelectedTravelMode }) => {
                 onChange={(e) => setSelectedTravelMode(e.target.value)}
                 className="appearance-none bg-white border border-gray-300 rounded-lg px-4 py-2 pr-8 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
               >
-                <option value="all">All Travel Modes</option>
-                <option value="walking">Walking</option>
-                <option value="cycling">Cycling</option>
-                <option value="car">Car</option>
-                <option value="taxi">Taxi</option>
+                <option value="all">{t('common.allTravelModes')}</option>
+                <option value="walking">{t('common.walking')}</option>
+                <option value="cycling">{t('common.cycling')}</option>
+                <option value="car">{t('common.car')}</option>
+                <option value="taxi">{t('common.taxi')}</option>
               </select>
               <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
                 <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
@@ -55,7 +62,7 @@ const Navigation = ({ selectedTravelMode, setSelectedTravelMode }) => {
                   : 'bg-blue-600 text-white hover:bg-blue-700'
               }`}
             >
-              Admin Panel
+              {t('navigation.admin')}
             </Link>
           </div>
         </div>
@@ -71,6 +78,7 @@ const Navigation = ({ selectedTravelMode, setSelectedTravelMode }) => {
  * - Uses React Router for page navigation
  */
 function App() {
+  const { t } = useTranslation();
   // State for showing the report form modal
   const [showReportForm, setShowReportForm] = useState(false);
   // State for the location selected on the map
@@ -131,7 +139,7 @@ function App() {
         <footer className="bg-white border-t mt-auto">
           <div className="container mx-auto px-4 py-4">
             <p className="text-center text-gray-600">
-              SafeValley Map - Making Makers Valley Safer
+              {t('common.footer')}
             </p>
           </div>
         </footer>
