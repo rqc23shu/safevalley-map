@@ -260,12 +260,15 @@ const AdminPanel = () => {
     setLoading(true);
     const q = query(collection(db, 'hazards'));
     const unsubscribe = onSnapshot(q, (snapshot) => {
-      const hazardsData = snapshot.docs.map(doc => ({
-        id: doc.id,
-        // Ensure isDeleted is always defined, default to false if not present
-        isDeleted: doc.data().isDeleted || false,
-        ...doc.data()
-      }));
+      const hazardsData = snapshot.docs.map(doc => {
+        const data = doc.data();
+        return {
+          id: doc.id,
+          isDeleted: data.isDeleted || false, // Ensure isDeleted is always defined
+          status: data.status || 'pending',   // Ensure status is always defined, default to 'pending'
+          ...data // Spread existing data
+        };
+      });
       setHazards(hazardsData);
       setLoading(false);
     }, (err) => {
@@ -545,7 +548,8 @@ const AdminPanel = () => {
               </div>
             ) : (
               <div className="space-y-6">
-                {filteredHazards.map((hazard) => (
+                {filteredHazards.map((hazard) => {
+                  return (
                   <div
                     key={hazard.id}
                     className="bg-white border border-gray-200 rounded-lg p-6 hover:shadow-xl transition-shadow duration-200 flex flex-col md:flex-row md:items-start gap-5"
@@ -576,7 +580,7 @@ const AdminPanel = () => {
                     <div className="flex-shrink-0 flex flex-col items-end space-y-3">
                       {hazard.photoUrl && (
                         <div className="bg-gray-50 border border-gray-200 rounded-lg p-2 text-center shadow-sm">
-                          <img src={hazard.photoUrl} alt="Hazard Report Photo" className="max-w-xs max-h-32 object-contain rounded" />
+                          <img src={hazard.photoUrl} alt="Hazard Report" className="max-w-xs max-h-32 object-contain rounded" />
                           <button
                             onClick={() => setSelectedPhotoUrl(hazard.photoUrl)}
                             className="mt-2 inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-200"
@@ -591,7 +595,7 @@ const AdminPanel = () => {
 
                       {/* Action Buttons */}
                       <div className="flex flex-wrap justify-end gap-2">
-                        {activeTab === 'deleted' ? (
+                        {hazard.isDeleted ? (
                           <>
                             <button
                               onClick={() => handleRestore(hazard.id)}
@@ -623,24 +627,33 @@ const AdminPanel = () => {
                           </>
                         ) : (
                           <>
-                            <button
-                              onClick={() => handleApprove(hazard.id)}
-                              className="p-2 text-green-600 hover:text-green-700 focus:outline-none rounded-md hover:bg-gray-100 transition-colors duration-200"
-                              title={t('admin.actions.approve')}
-                            >
-                              <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                                <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                              </svg>
-                            </button>
-                            <button
-                              onClick={() => handleReject(hazard.id)}
-                              className="p-2 text-yellow-600 hover:text-yellow-700 focus:outline-none rounded-md hover:bg-gray-100 transition-colors duration-200"
-                              title={t('admin.actions.reject')}
-                            >
-                              <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-                              </svg>
-                            </button>
+                            {/* Approve Button */}
+                            {(hazard.status === 'pending' || hazard.status === 'rejected') && (
+                              <button
+                                onClick={() => handleApprove(hazard.id)}
+                                className="p-2 text-green-600 hover:text-green-700 focus:outline-none rounded-md hover:bg-gray-100 transition-colors duration-200"
+                                title={t('admin.actions.approve')}
+                              >
+                                <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                                  <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                                </svg>
+                              </button>
+                            )}
+
+                            {/* Reject Button */}
+                            {(hazard.status === 'pending' || hazard.status === 'approved') && (
+                              <button
+                                onClick={() => handleReject(hazard.id)}
+                                className="p-2 text-yellow-600 hover:text-yellow-700 focus:outline-none rounded-md hover:bg-gray-100 transition-colors duration-200"
+                                title={t('admin.actions.reject')}
+                              >
+                                <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                                </svg>
+                              </button>
+                            )}
+
+                            {/* Edit Button */}
                             <button
                               onClick={() => setEditHazard(hazard)}
                               className="p-2 text-blue-600 hover:text-blue-700 focus:outline-none rounded-md hover:bg-gray-100 transition-colors duration-200"
@@ -650,6 +663,7 @@ const AdminPanel = () => {
                                 <path strokeLinecap="round" strokeLinejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
                               </svg>
                             </button>
+                            {/* Delete Button */}
                             <button
                               onClick={() => handleDelete(hazard.id)}
                               className="p-2 text-red-600 hover:text-red-700 focus:outline-none rounded-md hover:bg-gray-100 transition-colors duration-200"
@@ -664,7 +678,8 @@ const AdminPanel = () => {
                       </div>
                     </div>
                   </div>
-                ))}
+                );
+              })}
               </div>
             )}
           </div>
