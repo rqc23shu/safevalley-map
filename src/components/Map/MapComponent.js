@@ -237,6 +237,13 @@ const MapComponent = ({ onMapClick, selectedTravelMode }) => {
         minZoom={14}
         maxZoom={18}
         scrollWheelZoom={true}
+        zoomSnap={0.05}
+        zoomDelta={0.05}
+        zoomAnimation={true}
+        zoomAnimationThreshold={4}
+        easeLinearity={0.35}
+        wheelDebounceTime={40}
+        wheelPxPerZoomLevel={60}
         style={{ height: '100%', width: '100%', zIndex: 1 }}
         crs={L.CRS.Simple}
         maxBounds={bounds}
