@@ -293,7 +293,7 @@ const MapComponent = ({ onMapClick, selectedTravelMode }) => {
       <div className="relative w-full h-full rounded-lg shadow-xl overflow-hidden">
         <MapContainer
           center={[(bounds[0][0] + bounds[1][0]) / 2, (bounds[0][1] + bounds[1][1]) / 2]}
-          zoom={15}
+          zoom={16}
           style={{ height: '100%', width: '100%', zIndex: 1 }}
           minZoom={14}
           maxZoom={18}
