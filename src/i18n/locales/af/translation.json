@@ -23,5 +23,60 @@
     "legend": "Kaart Legende",
     "safe": "Veilige Gebied",
     "unsafe": "Onveilige Gebied"
+  },
+  "admin": {
+    "login": {
+      "title": "Admin Aanmelding",
+      "password": "Wagwoord",
+      "passwordPlaceholder": "Voer admin wagwoord in",
+      "loginButton": "Meld Aan",
+      "demoNote": "Vir demo doeleindes, gebruik wagwoord: {{password}}"
+    },
+    "hazards": {
+      "editTitle": "Wysig Gevaar",
+      "type": "Gevaar Tipe",
+      "description": "Beskrywing",
+      "duration": "Duur (dae)",
+      "saveChanges": "Stoor Veranderinge",
+      "saving": "Stoor...",
+      "cancel": "Kanselleer",
+      "error": "Kon nie veranderinge stoor nie. Probeer weer.",
+      "unknownHazard": "Onbekende Gevaar",
+      "reportedAt": "Aangemeld op {{date}}",
+      "noReportsFound": "Geen verslae gevind nie."
+    },
+    "tabs": {
+      "pending": "Hangende",
+      "approved": "Goedgekeur",
+      "rejected": "Verwerp",
+      "deleted": "Geskrap"
+    },
+    "actions": {
+      "approve": "Keur Goed",
+      "reject": "Verwerp",
+      "delete": "Skrap",
+      "restore": "Herstel",
+      "edit": "Wysig",
+      "permanentDelete": "Permanente Skrapping"
+    },
+    "hazardTypes": {
+      "crime": "Misdaad",
+      "load_shedding": "Beurtkrag",
+      "pothole": "Slaggat",
+      "dumping": "Onwettige Storting",
+      "water_leak": "Water Lek",
+      "sewerage_leak": "Riool Lek",
+      "flooding": "Oorstroming"
+    },
+    "status": {
+      "pending": "Hangende",
+      "approved": "Goedgekeur",
+      "rejected": "Verwerp",
+      "deleted": "Geskrap"
+    },
+    "errors": {
+      "loading": "Fout met laai van gevare",
+      "incorrectPassword": "Verkeerde wagwoord"
+    }
   }
 } 

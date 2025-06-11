@@ -23,5 +23,60 @@
     "legend": "Map Legend",
     "safe": "Safe Area",
     "unsafe": "Unsafe Area"
+  },
+  "admin": {
+    "login": {
+      "title": "Admin Login",
+      "password": "Password",
+      "passwordPlaceholder": "Enter admin password",
+      "loginButton": "Login",
+      "demoNote": "For demo purposes, use password: {{password}}"
+    },
+    "hazards": {
+      "editTitle": "Edit Hazard",
+      "type": "Hazard Type",
+      "description": "Description",
+      "duration": "Duration (days)",
+      "saveChanges": "Save Changes",
+      "saving": "Saving...",
+      "cancel": "Cancel",
+      "error": "Failed to save changes. Please try again.",
+      "unknownHazard": "Unknown Hazard",
+      "reportedAt": "Reported at {{date}}",
+      "noReportsFound": "No reports found."
+    },
+    "tabs": {
+      "pending": "Pending",
+      "approved": "Approved",
+      "rejected": "Rejected",
+      "deleted": "Deleted"
+    },
+    "actions": {
+      "approve": "Approve",
+      "reject": "Reject",
+      "delete": "Delete",
+      "restore": "Restore",
+      "edit": "Edit",
+      "permanentDelete": "Permanent Delete"
+    },
+    "hazardTypes": {
+      "crime": "Crime",
+      "load_shedding": "Load Shedding",
+      "pothole": "Pothole",
+      "dumping": "Illegal Dumping",
+      "water_leak": "Water Leak",
+      "sewerage_leak": "Sewerage Leak",
+      "flooding": "Flooding"
+    },
+    "status": {
+      "pending": "Pending",
+      "approved": "Approved",
+      "rejected": "Rejected",
+      "deleted": "Deleted"
+    },
+    "errors": {
+      "loading": "Error loading hazards",
+      "incorrectPassword": "Incorrect password"
+    }
   }
 } 

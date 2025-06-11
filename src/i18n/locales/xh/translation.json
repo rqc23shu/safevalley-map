@@ -23,5 +23,60 @@
     "legend": "I-Legend Yemephu",
     "safe": "Indawo Ekhuselekileyo",
     "unsafe": "Indawo Engakhuselekanga"
+  },
+  "admin": {
+    "login": {
+      "title": "Ukungena KokuLawula",
+      "password": "Igama lokugqitha",
+      "passwordPlaceholder": "Faka igama lokugqitha lokuphatha",
+      "loginButton": "Ngena",
+      "demoNote": "Ngeenjongo zokubonisa, sebenzisa igama lokugqitha: {{password}}"
+    },
+    "hazards": {
+      "editTitle": "Hlela Ingozi",
+      "type": "Uhlobo Lwengozi",
+      "description": "Inkcazo",
+      "duration": "Ubude bexesha (iintsuku)",
+      "saveChanges": "Gcina Iinguquko",
+      "saving": "Iyagcina...",
+      "cancel": "Rhoxisa",
+      "error": "Ayiphumelelanga ukugcina iinguquko. Zama kwakhona.",
+      "unknownHazard": "Ingozi Engaziwayo",
+      "reportedAt": "Ingxelo yenziwe ngo {{date}}",
+      "noReportsFound": "Akukho ngxelo ifunyenweyo."
+    },
+    "tabs": {
+      "pending": "Ilindile",
+      "approved": "Ivunyiwe",
+      "rejected": "Yaliwe",
+      "deleted": "Isusiwe"
+    },
+    "actions": {
+      "approve": "Vumela",
+      "reject": "Yala",
+      "delete": "Susa",
+      "restore": "Buyisela",
+      "edit": "Hlela",
+      "permanentDelete": "Susa Ngokupheleleyo"
+    },
+    "hazardTypes": {
+      "crime": "Ubugebengu",
+      "load_shedding": "Ukunqamuka Kogesi",
+      "pothole": "Umqulu",
+      "dumping": "Ukulahla Imfucumfucu",
+      "water_leak": "Ukuchitheka Kwamanzi",
+      "sewerage_leak": "Ukuchitheka Kwezindlu Zangasese",
+      "flooding": "Izikhukhula"
+    },
+    "status": {
+      "pending": "Ilindile",
+      "approved": "Ivunyiwe",
+      "rejected": "Yaliwe",
+      "deleted": "Isusiwe"
+    },
+    "errors": {
+      "loading": "Impazamo ekulayisheni iingozi",
+      "incorrectPassword": "Igama lokugqitha elingalungileyo"
+    }
   }
 } 

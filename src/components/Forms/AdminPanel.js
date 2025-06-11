@@ -3,22 +3,24 @@
 
 import React, { useState, useEffect } from 'react';
 import { collection, query, onSnapshot, doc, updateDoc, deleteDoc } from 'firebase/firestore';
+import { useTranslation } from 'react-i18next';
 import { db } from '../../services/firebase';
 
 // Simple password for prototype demo
 const ADMIN_PASSWORD = 'admin123';
 
 const hazardTypes = [
-  { value: 'crime', label: 'Crime', icon: '🚨' },
-  { value: 'load_shedding', label: 'Load Shedding', icon: '⚡' },
-  { value: 'pothole', label: 'Pothole', icon: '🕳️' },
-  { value: 'dumping', label: 'Illegal Dumping', icon: '🗑️' },
-  { value: 'water_leak', label: 'Water Leak', icon: '💧' },
-  { value: 'sewerage_leak', label: 'Sewerage Leak', icon: '🚰' },
-  { value: 'flooding', label: 'Flooding', icon: '🌊' },
+  { value: 'crime', icon: '🚨' },
+  { value: 'load_shedding', icon: '⚡' },
+  { value: 'pothole', icon: '🕳️' },
+  { value: 'dumping', icon: '🗑️' },
+  { value: 'water_leak', icon: '💧' },
+  { value: 'sewerage_leak', icon: '🚰' },
+  { value: 'flooding', icon: '🌊' },
 ];
 
 const EditHazardModal = ({ hazard, onClose, onSave }) => {
+  const { t } = useTranslation();
   const [formData, setFormData] = useState({
     type: hazard.type || '',
     description: hazard.description || '',
@@ -41,7 +43,7 @@ const EditHazardModal = ({ hazard, onClose, onSave }) => {
       await onSave(formData);
       onClose();
     } catch (err) {
-      setError('Failed to save changes. Please try again.');
+      setError(t('admin.hazards.error'));
       console.error('Error saving hazard:', err);
     } finally {
       setIsSaving(false);
@@ -52,7 +54,7 @@ const EditHazardModal = ({ hazard, onClose, onSave }) => {
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
       <div className="bg-white rounded-lg p-6 max-w-md w-full relative">
         <div className="flex justify-between items-center mb-6">
-          <h2 className="text-xl font-bold text-gray-900">Edit Hazard</h2>
+          <h2 className="text-xl font-bold text-gray-900">{t('admin.hazards.editTitle')}</h2>
           <button 
             className="text-gray-400 hover:text-gray-500 focus:outline-none"
             onClick={onClose}
@@ -82,10 +84,10 @@ const EditHazardModal = ({ hazard, onClose, onSave }) => {
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Hazard Type
+              {t('admin.hazards.type')}
             </label>
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-              {hazardTypes.map(({ value, label, icon }) => (
+              {hazardTypes.map(({ value, icon }) => (
                 <button
                   key={value}
                   type="button"
@@ -97,7 +99,7 @@ const EditHazardModal = ({ hazard, onClose, onSave }) => {
                   }`}
                 >
                   <span className="text-xl mr-2">{icon}</span>
-                  <span className="text-sm font-medium">{label}</span>
+                  <span className="text-sm font-medium">{t(`admin.hazardTypes.${value}`)}</span>
                 </button>
               ))}
             </div>
@@ -105,7 +107,7 @@ const EditHazardModal = ({ hazard, onClose, onSave }) => {
 
           <div>
             <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-2">
-              Description
+              {t('admin.hazards.description')}
             </label>
             <div className="relative">
               <textarea
@@ -126,7 +128,7 @@ const EditHazardModal = ({ hazard, onClose, onSave }) => {
 
           <div>
             <label htmlFor="duration" className="block text-sm font-medium text-gray-700 mb-2">
-              Duration (days)
+              {t('admin.hazards.duration')}
             </label>
             <div className="relative">
               <input
@@ -153,7 +155,7 @@ const EditHazardModal = ({ hazard, onClose, onSave }) => {
               className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-200"
               disabled={isSaving}
             >
-              Cancel
+              {t('admin.hazards.cancel')}
             </button>
             <button
               type="submit"
@@ -166,10 +168,10 @@ const EditHazardModal = ({ hazard, onClose, onSave }) => {
                     <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                     <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                   </svg>
-                  Saving...
+                  {t('admin.hazards.saving')}
                 </span>
               ) : (
-                'Save Changes'
+                t('admin.hazards.saveChanges')
               )}
             </button>
           </div>
@@ -180,6 +182,7 @@ const EditHazardModal = ({ hazard, onClose, onSave }) => {
 };
 
 const AdminPanel = () => {
+  const { t } = useTranslation();
   const [hazards, setHazards] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -199,36 +202,36 @@ const AdminPanel = () => {
       setHazards(allHazards);
       setLoading(false);
     }, (err) => {
-      setError('Error loading hazards');
+      setError(t('admin.errors.loading'));
       setLoading(false);
     });
     return () => unsubscribe();
-  }, [authenticated]);
+  }, [authenticated, t]);
 
   if (!authenticated) {
     return (
       <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center p-4">
         <div className="bg-white p-8 rounded-lg shadow-lg max-w-md w-full">
-          <h2 className="text-2xl font-bold text-gray-900 mb-6">Admin Login</h2>
+          <h2 className="text-2xl font-bold text-gray-900 mb-6">{t('admin.login.title')}</h2>
           <p className="text-sm text-gray-500 mb-6">
-            For demo purposes, use password: {ADMIN_PASSWORD}
+            {t('admin.login.demoNote', { password: ADMIN_PASSWORD })}
           </p>
           <div className="space-y-4">
             <div>
               <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
-                Password
+                {t('admin.login.password')}
               </label>
               <input
                 id="password"
                 type="password"
                 className="block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 transition-colors duration-200"
-                placeholder="Enter admin password"
+                placeholder={t('admin.login.passwordPlaceholder')}
                 value={password}
                 onChange={e => setPassword(e.target.value)}
                 onKeyPress={e => {
                   if (e.key === 'Enter') {
                     if (password === ADMIN_PASSWORD) setAuthenticated(true);
-                    else alert('Incorrect password');
+                    else alert(t('admin.errors.incorrectPassword'));
                   }
                 }}
               />
@@ -237,10 +240,10 @@ const AdminPanel = () => {
               className="w-full px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-200"
               onClick={() => {
                 if (password === ADMIN_PASSWORD) setAuthenticated(true);
-                else alert('Incorrect password');
+                else alert(t('admin.errors.incorrectPassword'));
               }}
             >
-              Login
+              {t('admin.login.loginButton')}
             </button>
           </div>
         </div>
@@ -420,7 +423,7 @@ const AdminPanel = () => {
                   onClick={() => setActiveTab(tab)}
                   className={getTabStyles(tab)}
                 >
-                  {tab.charAt(0).toUpperCase() + tab.slice(1)}
+                  {t(`admin.tabs.${tab}`)}
                   <span className="ml-2 px-2 py-1 rounded text-xs font-medium" style={{
                     backgroundColor: tab === 'pending' ? '#FEF3C7' : 
                                    tab === 'approved' ? '#D1FAE5' :
@@ -464,7 +467,7 @@ const AdminPanel = () => {
               </div>
             ) : filteredHazards.length === 0 ? (
               <div className="text-center py-12">
-                <p className="text-gray-500">No {activeTab} reports found.</p>
+                <p className="text-gray-500">{t('admin.hazards.noReportsFound')}</p>
               </div>
             ) : (
               <div className="space-y-6">
@@ -481,12 +484,12 @@ const AdminPanel = () => {
                         <div>
                           <div className="flex items-center gap-2">
                             <h3 className="text-lg font-medium text-gray-900">
-                              {hazardTypes.find(t => t.value === hazard.type)?.label || 'Unknown Hazard'}
+                              {t(`admin.hazardTypes.${hazard.type}`, t('admin.hazards.unknownHazard'))}
                             </h3>
                             {getStatusBadge(hazard)}
                           </div>
                           <p className="text-sm text-gray-500">
-                            Reported {new Date(hazard.createdAt?.seconds * 1000).toLocaleString()}
+                            {t('admin.hazards.reportedAt', { date: new Date(hazard.createdAt?.seconds * 1000).toLocaleString() })}
                           </p>
                         </div>
                       </div>
@@ -496,7 +499,7 @@ const AdminPanel = () => {
                             <button
                               onClick={() => handleRestore(hazard.id)}
                               className="p-2 text-green-600 hover:text-green-700 focus:outline-none"
-                              title="Restore"
+                              title={t('admin.hazards.restore')}
                             >
                               <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
@@ -505,7 +508,7 @@ const AdminPanel = () => {
                             <button
                               onClick={() => setEditHazard(hazard)}
                               className="p-2 text-blue-600 hover:text-blue-700 focus:outline-none"
-                              title="Edit"
+                              title={t('admin.hazards.edit')}
                             >
                               <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
@@ -514,7 +517,7 @@ const AdminPanel = () => {
                             <button
                               onClick={() => handlePermanentDelete(hazard.id)}
                               className="p-2 text-red-600 hover:text-red-700 focus:outline-none"
-                              title="Permanently Delete"
+                              title={t('admin.hazards.permanentlyDelete')}
                             >
                               <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
@@ -528,7 +531,7 @@ const AdminPanel = () => {
                                 <button
                                   onClick={() => handleApprove(hazard.id)}
                                   className="p-2 text-green-600 hover:text-green-700 focus:outline-none"
-                                  title="Approve"
+                                  title={t('admin.hazards.approve')}
                                 >
                                   <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
@@ -537,7 +540,7 @@ const AdminPanel = () => {
                                 <button
                                   onClick={() => handleReject(hazard.id)}
                                   className="p-2 text-yellow-600 hover:text-yellow-700 focus:outline-none"
-                                  title="Reject"
+                                  title={t('admin.hazards.reject')}
                                 >
                                   <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -549,7 +552,7 @@ const AdminPanel = () => {
                               <button
                                 onClick={() => handleApprove(hazard.id)}
                                 className="p-2 text-green-600 hover:text-green-700 focus:outline-none"
-                                title="Approve"
+                                title={t('admin.hazards.approve')}
                               >
                                 <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
@@ -560,7 +563,7 @@ const AdminPanel = () => {
                               <button
                                 onClick={() => handleReject(hazard.id)}
                                 className="p-2 text-yellow-600 hover:text-yellow-700 focus:outline-none"
-                                title="Reject"
+                                title={t('admin.hazards.reject')}
                               >
                                 <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -570,7 +573,7 @@ const AdminPanel = () => {
                             <button
                               onClick={() => setEditHazard(hazard)}
                               className="p-2 text-blue-600 hover:text-blue-700 focus:outline-none"
-                              title="Edit"
+                              title={t('admin.hazards.edit')}
                             >
                               <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
@@ -579,7 +582,7 @@ const AdminPanel = () => {
                             <button
                               onClick={() => handleDelete(hazard.id)}
                               className="p-2 text-red-600 hover:text-red-700 focus:outline-none"
-                              title="Delete"
+                              title={t('admin.hazards.delete')}
                             >
                               <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
@@ -593,7 +596,7 @@ const AdminPanel = () => {
                       <p className="text-gray-700">{hazard.description}</p>
                     </div>
                     <div className="mt-4 flex items-center space-x-4 text-sm text-gray-500">
-                      <span>Duration: {hazard.duration} days</span>
+                      <span>{t('admin.hazards.duration')}: {hazard.duration} days</span>
                     </div>
                   </div>
                 ))}
