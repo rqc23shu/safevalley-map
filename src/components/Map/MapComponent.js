@@ -303,8 +303,8 @@ const MapComponent = ({ onMapClick, selectedTravelMode }) => {
           maxBoundsViscosity={1.0}
           ref={mapRef}
           attributionControl={false}
-          zoomDelta={0.2}
-          zoomSnap={0.05}
+          zoomDelta={0.05}
+          zoomSnap={0.01}
         >
           {/* Static image overlay with enhanced styling */}
           <ImageOverlay 
