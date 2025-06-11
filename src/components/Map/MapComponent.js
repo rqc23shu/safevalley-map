@@ -343,26 +343,6 @@ const MapComponent = ({ onMapClick, selectedTravelMode }) => {
             </button>
           </div>
 
-          {/* Enhanced zoom controls */}
-          <div className="absolute top-4 right-4 z-[1000] flex flex-col gap-2">
-            <button
-              onClick={() => map?.zoomIn({ animate: true })}
-              className="bg-white p-2 rounded-full shadow-lg hover:bg-gray-100 transition-colors duration-200"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-              </svg>
-            </button>
-            <button
-              onClick={() => map?.zoomOut({ animate: true })}
-              className="bg-white p-2 rounded-full shadow-lg hover:bg-gray-100 transition-colors duration-200"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 12H4" />
-              </svg>
-            </button>
-          </div>
-
           {/* Render hazard markers */}
           {visibleHazards.filter(filterHazardsByTravelMode).map((hazard) => (
             <React.Fragment key={hazard.id}>
@@ -392,6 +372,30 @@ const MapComponent = ({ onMapClick, selectedTravelMode }) => {
             </React.Fragment>
           ))}
         </MapContainer>
+        {/* Move custom zoom controls here, outside MapContainer */}
+        {map && (
+          <div className="absolute top-4 right-4 z-[1000] flex flex-col gap-2 pointer-events-auto">
+            <button
+              onClick={() => {
+                console.log('Zoom In button clicked. map:', map);
+                map.zoomIn({ animate: true });
+              }}
+              className="bg-white p-2 rounded-full shadow-lg hover:bg-gray-100 transition-colors duration-200"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+              </svg>
+            </button>
+            <button
+              onClick={() => map.zoomOut({ animate: true })}
+              className="bg-white p-2 rounded-full shadow-lg hover:bg-gray-100 transition-colors duration-200"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 12H4" />
+              </svg>
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );
