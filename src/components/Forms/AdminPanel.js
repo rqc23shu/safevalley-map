@@ -269,7 +269,11 @@ const AdminPanel = () => {
     try {
       await updateDoc(doc(db, 'hazards', reportId), {
         isRejected: true,
-        rejectedAt: new Date()
+        isApproved: false,
+        isDeleted: false,
+        rejectedAt: new Date(),
+        approvedAt: null,
+        deletedAt: null
       });
     } catch (err) {
       setError('Error rejecting report');
@@ -549,6 +553,17 @@ const AdminPanel = () => {
                               >
                                 <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                                </svg>
+                              </button>
+                            )}
+                            {activeTab === 'approved' && (
+                              <button
+                                onClick={() => handleReject(hazard.id)}
+                                className="p-2 text-yellow-600 hover:text-yellow-700 focus:outline-none"
+                                title="Reject"
+                              >
+                                <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                                 </svg>
                               </button>
                             )}
