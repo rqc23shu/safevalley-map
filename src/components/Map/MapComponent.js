@@ -233,8 +233,8 @@ const MapComponent = ({ onMapClick, selectedTravelMode }) => {
     <div className="w-full h-[70vh] relative" style={{ backgroundColor: 'transparent' }}>
       <MapContainer
         center={[-26.189, 28.075]}
-        zoom={16}
-        minZoom={15}
+        zoom={14}
+        minZoom={13}
         maxZoom={18}
         scrollWheelZoom={true}
         style={{ height: '100%', width: '100%', zIndex: 1 }}
