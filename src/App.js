@@ -1,6 +1,7 @@
 // App.js
-// Main application component for SafeValley Map
-// Handles routing, navigation, travel mode filter, and integration of map, report form, and admin panel
+// My main app component for the SafeValley Map project
+// TODO: maybe add dark mode support later?
+// TODO: check if we need to optimize the map loading
 
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Link, useLocation } from 'react-router-dom';
@@ -13,29 +14,33 @@ import LanguageSwitcher from './components/LanguageSwitcher';
 import IntroMessageModal from './components/Modals/IntroMessageModal';
 import PrototypeLoginPage from './components/Forms/PrototypeLoginPage';
 
-// Navigation component for better organization
+// Navigation component - moved this here to keep things simple for now
+// might refactor into separate file later if it gets too big
 const Navigation = ({ selectedTravelMode, setSelectedTravelMode }) => {
   const location = useLocation();
   const isAdmin = location.pathname === '/admin';
   const { t } = useTranslation();
 
+  // temp debug log - remove later
+  // console.log('Current travel mode:', selectedTravelMode);
+
   return (
     <nav className="bg-white shadow-md">
       <div className="container mx-auto px-4 py-4">
         <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-          {/* App title and logo */}
+          {/* App title and logo - might add a proper logo later */}
           <Link to="/" className="flex items-center gap-2 group">
             <span className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-blue-800 bg-clip-text text-transparent">
               {t('map.title')}
             </span>
           </Link>
 
-          {/* Navigation items and filters */}
+          {/* Navigation items and filters - might need to add more options later */}
           <div className="flex items-center gap-6">
             {/* Language Switcher */}
             <LanguageSwitcher />
 
-            {/* Travel mode filter */}
+            {/* Travel mode filter - might add more options later */}
             <div className="relative">
               <select
                 value={selectedTravelMode}
@@ -55,7 +60,7 @@ const Navigation = ({ selectedTravelMode, setSelectedTravelMode }) => {
               </div>
             </div>
 
-            {/* Admin panel link */}
+            {/* Admin panel link - might need to add auth check later */}
             <Link
               to="/admin"
               className={`px-4 py-2 rounded-lg transition-all duration-200 ${
@@ -67,7 +72,7 @@ const Navigation = ({ selectedTravelMode, setSelectedTravelMode }) => {
               {t('navigation.admin')}
             </Link>
 
-            {/* Login link */}
+            {/* Login link - temp solution for now */}
             <Link
               to="/login"
               className="px-4 py-2 rounded-lg bg-gray-200 text-gray-800 hover:bg-gray-300 transition-colors duration-200"
@@ -81,12 +86,9 @@ const Navigation = ({ selectedTravelMode, setSelectedTravelMode }) => {
   );
 };
 
-/**
- * App - Main entry point for the SafeValley Map web app.
- * - Displays navigation bar with travel mode filter and admin panel link
- * - Handles showing the map, report form, and admin panel
- * - Uses React Router for page navigation
- */
+// Main App component
+// TODO: Add error boundary
+// TODO: Maybe add loading states
 function App() {
   const { t } = useTranslation();
   // State for showing the report form modal
@@ -98,7 +100,8 @@ function App() {
   // State for showing the introductory message modal
   const [showIntroModal, setShowIntroModal] = useState(false);
 
-  // Check if user has seen the intro message on component mount
+  // Check if user has seen the intro message
+  // TODO: Maybe add a way to reset this for testing
   useEffect(() => {
     const hasSeenIntro = localStorage.getItem('hasSeenIntroMessage');
     if (!hasSeenIntro) {
@@ -106,13 +109,14 @@ function App() {
     }
   }, []);
 
-  // Handler to close the intro message modal and set flag in localStorage
+  // Close intro modal and save to localStorage
   const handleCloseIntroModal = () => {
     setShowIntroModal(false);
     localStorage.setItem('hasSeenIntroMessage', 'true');
   };
 
-  // Handler for map click: opens the report form at the clicked location
+  // Handle map click - opens report form at clicked location
+  // TODO: Add validation for valid coordinates
   const handleMapClick = (e) => {
     setSelectedLocation({
       lat: e.latlng.lat,
@@ -162,10 +166,10 @@ function App() {
           </Routes>
         </main>
 
-        {/* Render IntroMessageModal if showIntroModal is true */}
+        {/* Show intro modal if needed */}
         {showIntroModal && <IntroMessageModal onClose={handleCloseIntroModal} />}
 
-        {/* Footer */}
+        {/* Footer - might add more links later */}
         <footer className="bg-white border-t mt-auto">
           <div className="container mx-auto px-4 py-4">
             <p className="text-center text-gray-600">

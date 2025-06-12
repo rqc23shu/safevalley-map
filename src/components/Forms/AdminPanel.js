@@ -1,5 +1,7 @@
 // AdminPanel.js
-// Admin interface for moderating hazard reports
+// My admin interface for moderating hazard reports
+// TODO: maybe add proper auth later
+// TODO: check if we need to add more features
 
 import React, { useState, useEffect } from 'react';
 import { collection, query, onSnapshot, doc, updateDoc, deleteDoc } from 'firebase/firestore';
@@ -8,9 +10,11 @@ import { db } from '../../services/firebase';
 import { hazardTypes } from '../../utils/constants';
 
 // Simple password for prototype demo
+// TODO: replace with proper auth
 const ADMIN_PASSWORD = 'admin123';
 
-// Photo Viewer Modal Component
+// Photo viewer modal
+// TODO: maybe add zoom feature
 const PhotoViewerModal = ({ photoUrl, onClose }) => {
   const { t } = useTranslation();
   if (!photoUrl) return null;
@@ -46,6 +50,8 @@ const PhotoViewerModal = ({ photoUrl, onClose }) => {
   );
 };
 
+// Edit hazard modal
+// TODO: maybe add validation
 const EditHazardModal = ({ hazard, onClose, onSave }) => {
   const { t } = useTranslation();
   const [formData, setFormData] = useState({
@@ -56,11 +62,13 @@ const EditHazardModal = ({ hazard, onClose, onSave }) => {
   const [error, setError] = useState('');
   const [isSaving, setIsSaving] = useState(false);
 
+  // Handle input changes
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
+  // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSaving(true);
@@ -224,6 +232,9 @@ const EditHazardModal = ({ hazard, onClose, onSave }) => {
   );
 };
 
+// Main admin panel component
+// TODO: Add proper auth
+// TODO: Maybe add bulk actions
 const AdminPanel = () => {
   const { t } = useTranslation();
   const [hazards, setHazards] = useState([]);
@@ -236,6 +247,7 @@ const AdminPanel = () => {
   const [activeTab, setActiveTab] = useState('pending');
 
   // Simple password-based authentication for prototype
+  // TODO: replace with proper auth
   const handleLogin = () => {
     if (password === ADMIN_PASSWORD) { // Replace with a secure authentication method
       setAuthenticated(true);
@@ -245,6 +257,7 @@ const AdminPanel = () => {
   };
 
   // Fetch hazards from Firestore
+  // TODO: maybe add pagination
   useEffect(() => {
     if (!authenticated) return;
 

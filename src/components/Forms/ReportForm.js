@@ -1,5 +1,7 @@
 // ReportForm.js
-// Modal form for reporting hazards on the map
+// My form component for reporting hazards
+// TODO: maybe add image compression before upload
+// TODO: check if we need to add more validation rules
 
 import React, { useState } from 'react';
 import { collection, addDoc } from 'firebase/firestore';

@@ -1,5 +1,7 @@
 // MapComponent.js
-// Displays the static map, handles map clicks, and visualizes hazards as markers and translucent circles
+// My map component for the SafeValley project
+// TODO: maybe add clustering for markers when zoomed out
+// TODO: check if we need to optimize the marker rendering
 
 import React, { useEffect, useState, useRef } from 'react';
 import { MapContainer, ImageOverlay, Marker, Popup, useMapEvents } from 'react-leaflet';
@@ -11,17 +13,18 @@ import { hazardTypes } from '../../utils/constants';
 import { useTranslation } from 'react-i18next';
 import './MapComponent.css';
 
-// Map bounds for the Makers Valley static map image (real-world coordinates)
+// Map bounds for Makers Valley - got these from Google Maps
+// TODO: double check these coordinates
 const bounds = [
   [-26.197, 28.064], // Southwest (lat, lng)
   [-26.181, 28.085], // Northeast (lat, lng)
 ];
 
-// Static image URL (should be in public folder)
+// Static image URL - make sure this is in public folder
 const imageUrl = process.env.PUBLIC_URL + '/map.png';
 
 // Fix for default marker icon in React
-// (Make sure marker-icon.png, marker-icon-2x.png, marker-shadow.png are in public/)
+// Note: need marker-icon.png, marker-icon-2x.png, marker-shadow.png in public/
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
   iconUrl: process.env.PUBLIC_URL + '/marker-icon.png',
@@ -30,10 +33,12 @@ L.Icon.Default.mergeOptions({
 });
 
 // Component to handle map clicks and bounds restriction
+// TODO: maybe add double click handler later
 function MapController({ onMapClick }) {
   const map = useMapEvents({
     click: (e) => {
       const { lat, lng } = e.latlng;
+      // Check if click is within bounds
       if (
         lat >= bounds[0][0] && lat <= bounds[1][0] &&
         lng >= bounds[0][1] && lng <= bounds[1][1]
@@ -58,7 +63,7 @@ function MapController({ onMapClick }) {
     ];
     map.setView(center, map.getZoom());
 
-    // Add bounds padding
+    // Add bounds padding - might need to adjust this
     const padding = L.point(50, 50);
     map.setMaxBounds(maxBounds.pad(0.1));
 
@@ -71,6 +76,7 @@ function MapController({ onMapClick }) {
 }
 
 // Helper to get color for hazard type
+// TODO: maybe add more colors or make them configurable
 const getHazardColor = (type) => {
   switch (type) {
     case 'crime':
@@ -93,6 +99,7 @@ const getHazardColor = (type) => {
 };
 
 // Helper to get marker icon for hazard type
+// TODO: maybe add custom icons for each type
 const getHazardIcon = (type) => {
   let iconUrl = '';
   switch (type) {
@@ -124,6 +131,7 @@ const getHazardIcon = (type) => {
 };
 
 // Overlay component to block pointer events on the grey area
+// TODO: maybe make this more efficient
 function MapInteractionOverlay({ map, bounds }) {
   const [mapBounds, setMapBounds] = useState(null);
   const containerRef = useRef();
@@ -213,6 +221,9 @@ function MapInteractionOverlay({ map, bounds }) {
   );
 }
 
+// Main map component
+// TODO: Add loading spinner
+// TODO: Maybe add error handling for failed marker loads
 const MapComponent = ({ onMapClick, selectedTravelMode }) => {
   const [hazards, setHazards] = useState([]);
   const [map, setMap] = useState(null);
@@ -220,10 +231,12 @@ const MapComponent = ({ onMapClick, selectedTravelMode }) => {
   const mapRef = useRef();
   const { t } = useTranslation();
 
+  // Temp loading state - might need to change this
   React.useEffect(() => {
     setIsLoading(false);
   }, []);
 
+  // Get hazards from Firestore
   useEffect(() => {
     const q = query(
       collection(db, 'hazards')
